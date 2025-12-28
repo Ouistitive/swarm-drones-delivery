@@ -1,13 +1,24 @@
 package ui
 
-import "swarm-drones-delivery/internal/simulation"
+import (
+	"log"
+	Map "swarm-drones-delivery/internal/map"
+	"swarm-drones-delivery/internal/simulation"
+)
 
 type Game struct {
-	simulation *simulation.Simulation
+	Sim *simulation.Simulation
 }
 
-func NewGame() *Game {
+func NewGame(mapPath string) *Game {
+	sim := simulation.NewSimulation()
+	m, err := Map.ReadMap(mapPath)
+	if err != nil {
+		log.Fatal("Cannot load map")
+	}
+
+	sim.Env.Map = m
 	return &Game{
-		simulation: simulation.NewSimulation(),
+		Sim: sim,
 	}
 }

@@ -1,7 +1,7 @@
 package simulation
 
 type Simulation struct {
-	env *Environment
+	Env *Environment
 }
 
 func NewSimulation() (*Simulation) {

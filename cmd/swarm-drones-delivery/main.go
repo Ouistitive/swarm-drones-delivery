@@ -11,8 +11,8 @@ import (
 func main() {
 	ebiten.SetWindowSize(constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT)
 	ebiten.SetWindowTitle("Hello, World!")
-	game := ui.NewGame()
-
+	game := ui.NewGame("maps/layout.txt")
+	
 	if err := ebiten.RunGame(game); err != nil {
 		log.Fatal(err)
 	}
