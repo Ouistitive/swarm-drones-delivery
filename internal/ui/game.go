@@ -2,8 +2,8 @@ package ui
 
 import (
 	"log"
-	Map "swarm-drones-delivery/internal/map"
 	"swarm-drones-delivery/internal/simulation"
+	"swarm-drones-delivery/internal/world"
 )
 
 type Game struct {
@@ -11,13 +11,12 @@ type Game struct {
 }
 
 func NewGame(mapPath string) *Game {
-	sim := simulation.NewSimulation()
-	m, err := Map.ReadMap(mapPath)
+	m, err := world.ReadMap(mapPath)
+	sim := simulation.NewSimulation(m)
 	if err != nil {
 		log.Fatal("Cannot load map")
 	}
 
-	sim.Env.Map = m
 	return &Game{
 		Sim: sim,
 	}
