@@ -11,11 +11,8 @@ func (g *Game) Update() error {
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
 	envMap := g.Sim.Env.Map
-
 	// adapt the window size based on the number of cells
-	mapWidth := envMap.Width * constants.CELL_SIZE
-	mapHeight := envMap.Height * constants.CELL_SIZE
-	return mapWidth + MARGIN*2, mapHeight + MARGIN*2
+	return envMap.Width * constants.CELL_SIZE, envMap.Height * constants.CELL_SIZE
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
@@ -27,13 +24,13 @@ func (g *Game) DrawMap(screen *ebiten.Image) {
 	for y := 0.0; y < float64(envMap.Height); y++ {
 		for x := 0.0; x < float64(envMap.Width); x++ {
 			drawX, drawY := g.mapToDrawCoords(x, y)
-			drawImageAt(screen, groundImg, drawX, drawY, BLACK)
+			drawImageAt(screen, groundImg, drawX, drawY, WHITE)
 		}
 	}
 
 	for _, pos := range envMap.Walls {
 		drawX, drawY := g.mapToDrawCoords(pos.X, pos.Y)
-		drawImageAt(screen, groundImg, drawX, drawY, WHITE)
+		drawImageAt(screen, groundImg, drawX, drawY, BLACK)
 	}
 }
 

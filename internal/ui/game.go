@@ -17,9 +17,7 @@ func NewGame(mapPath string) *Game {
 		log.Fatal("Cannot load map")
 	}
 
-	g := &Game{
+	return &Game{
 		Sim: sim,
 	}
-
-	return g
 }

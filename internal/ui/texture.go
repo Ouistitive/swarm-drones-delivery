@@ -8,7 +8,6 @@ import (
 )
 
 var (
-	MARGIN 				 = 0
 	groundImg            *ebiten.Image
 )
 

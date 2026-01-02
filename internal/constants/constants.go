@@ -6,7 +6,3 @@ var (
 
 	CELL_SIZE = 32
 )
-
-func init() {
-	
-}
