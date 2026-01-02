@@ -1,7 +1,7 @@
 package world
 
 type Position struct {
-	x, y float64
+	X, Y float64
 }
 
 type Map struct {
@@ -11,7 +11,7 @@ type Map struct {
 }
 
 func NewPosition(x, y float64) Position {
-	return Position{ x: x, y: y }
+	return Position{ X: x, Y: y }
 }
 
 func NewMap(width, height int) *Map {

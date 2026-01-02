@@ -1,8 +1,8 @@
 package ui
 
 import (
+	"swarm-drones-delivery/internal/constants"
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
 func (g *Game) Update() error {
@@ -10,9 +10,48 @@ func (g *Game) Update() error {
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
-	return 320, 240
+	envMap := g.Sim.Env.Map
+
+	// adapt the window size based on the number of cells
+	mapWidth := envMap.Width * constants.CELL_SIZE
+	mapHeight := envMap.Height * constants.CELL_SIZE
+	return mapWidth + MARGIN*2, mapHeight + MARGIN*2
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	ebitenutil.DebugPrint(screen, "Hello, World!")
+	g.DrawMap(screen)
+}
+
+func (g *Game) DrawMap(screen *ebiten.Image) {
+	envMap := g.Sim.Env.Map
+	for y := 0.0; y < float64(envMap.Height); y++ {
+		for x := 0.0; x < float64(envMap.Width); x++ {
+			drawX, drawY := g.mapToDrawCoords(x, y)
+			drawImageAt(screen, groundImg, drawX, drawY, BLACK)
+		}
+	}
+
+	for _, pos := range envMap.Walls {
+		drawX, drawY := g.mapToDrawCoords(pos.X, pos.Y)
+		drawImageAt(screen, groundImg, drawX, drawY, WHITE)
+	}
+}
+
+func (g *Game) mapToDrawCoords(mapX float64, mapY float64) (float64, float64) {
+	return mapX * float64(constants.CELL_SIZE), mapY * float64(constants.CELL_SIZE)
+}
+
+func drawImageAt(screen *ebiten.Image, img *ebiten.Image, x, y float64, colorScale *ebiten.ColorScale) {
+	if img == nil {
+		return
+	}
+	options := &ebiten.DrawImageOptions{}
+	if colorScale != nil {
+		options.ColorScale = *colorScale
+	}
+
+	options.GeoM.Scale(float64(constants.CELL_SIZE)/float64(img.Bounds().Dx()), float64(constants.CELL_SIZE)/float64(img.Bounds().Dy()))
+	options.GeoM.Translate(float64(x), float64(y))
+
+	screen.DrawImage(img, options)
 }
