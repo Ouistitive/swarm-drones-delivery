@@ -1,9 +1,13 @@
 package simulation
 
+import "swarm-drones-delivery/internal/world"
+
 type Simulation struct {
-	env *Environment
+	Env *Environment
 }
 
-func NewSimulation() (*Simulation) {
-	return &Simulation{}
+func NewSimulation(m *world.Map) (*Simulation) {
+	return &Simulation{
+		Env: NewEnvironment(m),
+	}
 }

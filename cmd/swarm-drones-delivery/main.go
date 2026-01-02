@@ -10,9 +10,9 @@ import (
 
 func main() {
 	ebiten.SetWindowSize(constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT)
-	ebiten.SetWindowTitle("Hello, World!")
-	game := ui.NewGame()
-
+	ebiten.SetWindowTitle("Swarm drones delivery simulation")
+	game := ui.NewGame("maps/layout.txt")
+	
 	if err := ebiten.RunGame(game); err != nil {
 		log.Fatal(err)
 	}
