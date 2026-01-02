@@ -34,7 +34,6 @@ func loadMap(content string) *Map {
 
 		y++
 	}
-
-	fmt.Println(walls)
+	
 	return &Map{Width: len(lines[0]), Height: len(lines), Cells: cells, Walls: walls}
 }
