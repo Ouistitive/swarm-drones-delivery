@@ -22,7 +22,8 @@ func main() {
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
 	ebiten.SetWindowTitle("Swarm drones delivery simulation")
 
-	game := ui.NewGame(LAYOUT_PATH)	
+	game := ui.NewGame(LAYOUT_PATH)
+	game.Sim.Run()
 	if err := ebiten.RunGame(game); err != nil {
 		log.Fatal(err)
 	}
