@@ -2,6 +2,8 @@ package simulation
 
 import (
 	"fmt"
+	"swarm-drones-delivery/internal/agents"
+	"swarm-drones-delivery/internal/core"
 	"swarm-drones-delivery/internal/world"
 	"sync"
 	"time"
@@ -22,11 +24,11 @@ func NewSimulation(m *world.Map) (*Simulation) {
 	}
 
 	for i := range 20 {
-		agtId := AgentID(fmt.Sprintf("Agent_%d", i))
-
+		agtId := core.AgentID(fmt.Sprintf("Agent_%d", i))
 		syncChan := make(chan int)
 		sim.syncChans.Store(agtId, syncChan)
-		sim.Env.AddAgent(agtId, syncChan)
+		agtFactory := agents.DroneFactory(agtId, syncChan)
+		sim.Env.AddAgent(agtFactory)
 	}
 
 	return sim
@@ -45,19 +47,19 @@ func (s *Simulation) Run() {
 	for _, agt := range s.Env.Agents {
 		go agt.Start()
 
-		go func(agt IAgent) {
+		go func(agt core.IAgent) {
 			step := 0
 			for {
 				step++
-				c, ok := s.syncChans.Load(agt.ID())
+				syncChan, ok := s.syncChans.Load(agt.ID())
 				if !ok {
 					fmt.Printf("No sync channel found for agent %s, finishing...\n", agt.ID())
 					return
 				}
 
-				c.(chan int) <- step
-				time.Sleep(1 * time.Millisecond * time.Duration(s.ticDuration))
-				<-c.(chan int)
+				syncChan.(chan int) <- step
+				time.Sleep(time.Millisecond * time.Duration(s.ticDuration))
+				<-syncChan.(chan int)
 			}
 		}(agt)
 	}
