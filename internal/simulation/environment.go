@@ -1,27 +1,22 @@
 package simulation
 
 import (
-	"math/rand"
+	"swarm-drones-delivery/internal/core"
 	"swarm-drones-delivery/internal/world"
 )
 
-type MoveRequest struct {
-	Agt IAgent
-	ResponseChannel chan bool
-}
-
 type Environment struct {
-	Agents 			[]IAgent
+	Agents 			[]core.IAgent
 	Map    			*world.Map
 
-	moveChan		chan MoveRequest
+	moveChan		chan core.MoveRequest
 }
 
 func NewEnvironment(m *world.Map) *Environment {
 	return &Environment{
-		Agents: 	make([]IAgent, 0),
+		Agents: 	make([]core.IAgent, 0),
 		Map:    	m,
-		moveChan:	make(chan MoveRequest),
+		moveChan:	make(chan core.MoveRequest),
 	}
 }
 
@@ -37,14 +32,6 @@ func (e *Environment) moveRequest() {
 	}
 }
 
-func (e *Environment) AddAgent(droneId AgentID, syncChan chan int) {
-	e.Agents = append(e.Agents, NewDrone(
-		droneId, 
-		world.NewPosition(
-			rand.Float64() * float64(e.Map.Width-1), 
-			rand.Float64() * float64(e.Map.Height-1),
-		),
-		syncChan,
-		e.moveChan,
-	))
+func (e *Environment) AddAgent(factory core.AgentFactory) {
+	e.Agents = append(e.Agents, factory(e.Map.RandomPosition(), e.moveChan))
 }
