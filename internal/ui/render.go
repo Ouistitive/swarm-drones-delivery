@@ -2,6 +2,7 @@ package ui
 
 import (
 	"swarm-drones-delivery/internal/constants"
+
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -17,6 +18,7 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeigh
 
 func (g *Game) Draw(screen *ebiten.Image) {
 	g.DrawMap(screen)
+	g.DrawAgents(screen)
 }
 
 func (g *Game) DrawMap(screen *ebiten.Image) {
@@ -31,6 +33,15 @@ func (g *Game) DrawMap(screen *ebiten.Image) {
 	for _, pos := range envMap.Walls {
 		drawX, drawY := g.mapToDrawCoords(pos.X, pos.Y)
 		drawImageAt(screen, groundImg, drawX, drawY, BLACK)
+	}
+}
+
+func (g *Game) DrawAgents(screen *ebiten.Image) {
+	agts := g.Sim.Env.Agents
+	
+	for _, agt := range agts {
+		drawX, drawY := g.mapToDrawCoords(agt.Position().X, agt.Position().Y)
+		drawImageAt(screen, droneImg, drawX, drawY, nil)
 	}
 }
 

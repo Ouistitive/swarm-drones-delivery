@@ -9,6 +9,7 @@ import (
 
 var (
 	groundImg            *ebiten.Image
+	droneImg   	         *ebiten.Image
 )
 
 func init() {
@@ -17,5 +18,10 @@ func init() {
 	groundImg, _, err = ebitenutil.NewImageFromFile("assets/ground.png")
 	if err != nil {
 		log.Printf("Warning: Could not load ground.png: %v", err)
+	}
+
+	droneImg, _, err = ebitenutil.NewImageFromFile("assets/drone.png")
+	if err != nil {
+		log.Printf("Warning: Could not load drone.png: %v", err)
 	}
 }
