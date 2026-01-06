@@ -3,8 +3,10 @@ package ui
 import "github.com/hajimehoshi/ebiten/v2"
 
 var (
-	BLACK *ebiten.ColorScale
-	WHITE *ebiten.ColorScale
+	BLACK 	*ebiten.ColorScale
+	WHITE 	*ebiten.ColorScale
+
+	RED 	*ebiten.ColorScale
 )
 
 func init() {
