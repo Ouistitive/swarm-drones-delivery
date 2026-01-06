@@ -1,28 +1,35 @@
 package ui
 
 import (
+	"image/color"
 	"swarm-drones-delivery/internal/constants"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/vector"
 )
 
 func (g *Game) Update() error {
+	g.Control()
 	return nil
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
-	envMap := g.Sim.Env.Map
+	envMap := g.Sim.Env.World()
 	// adapt the window size based on the number of cells
 	return envMap.Width * constants.CELL_SIZE, envMap.Height * constants.CELL_SIZE
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
 	g.DrawMap(screen)
+	if g.isDebugMode {
+		g.DrawLinesBetweenAgents(screen)
+	}
 	g.DrawAgents(screen)
 }
 
 func (g *Game) DrawMap(screen *ebiten.Image) {
-	envMap := g.Sim.Env.Map
+	envMap := g.Sim.Env.World()
+
 	for y := 0.0; y < float64(envMap.Height); y++ {
 		for x := 0.0; x < float64(envMap.Width); x++ {
 			drawX, drawY := g.mapToDrawCoords(x, y)
@@ -37,11 +44,23 @@ func (g *Game) DrawMap(screen *ebiten.Image) {
 }
 
 func (g *Game) DrawAgents(screen *ebiten.Image) {
-	agts := g.Sim.Env.Agents
+	agts := g.Sim.Env.Agents()
 	
 	for _, agt := range agts {
-		drawX, drawY := g.mapToDrawCoords(agt.Position().X, agt.Position().Y)
+		drawX, drawY := g.mapToDrawCoords(agt.Position().X - constants.CENTER_AGENT, agt.Position().Y - constants.CENTER_AGENT)
 		drawImageAt(screen, droneImg, drawX, drawY, nil)
+	}
+}
+
+func (g *Game) DrawLinesBetweenAgents(screen *ebiten.Image) {
+	agts := g.Sim.Env.Agents()
+
+	for _, agt := range agts {
+		drawX, drawY := g.mapToDrawCoords(agt.Position().X, agt.Position().Y)
+		for _, surrAgt := range agt.SurroundingAgents() {
+			surrAgtX, surrAgtY := g.mapToDrawCoords(surrAgt.Position().X, surrAgt.Position().Y)
+			vector.StrokeLine(screen, float32(drawX), float32(drawY), float32(surrAgtX), float32(surrAgtY), 1, color.RGBA{0, 100, 255, 255}, false)
+		}
 	}
 }
 

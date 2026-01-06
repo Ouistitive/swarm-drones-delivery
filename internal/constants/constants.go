@@ -5,4 +5,7 @@ var (
 	SCREEN_HEIGHT = 480
 
 	CELL_SIZE = 32
+	CENTER_AGENT = 0.5
+
+	VISION_RANGE = 3.0
 )

@@ -3,26 +3,38 @@ package agents
 import (
 	"fmt"
 	"math/rand"
+	"swarm-drones-delivery/internal/agents/behaviors"
+	"swarm-drones-delivery/internal/constants"
 	"swarm-drones-delivery/internal/core"
 	"swarm-drones-delivery/internal/world"
 )
 
 type Drone struct {
-	id					core.AgentID
-	syncChan  			chan int
+	id  core.AgentID
+	env core.IEnvironment
 
-	moveChan 			chan core.MoveRequest
-	moveChanResponse  	chan bool
+	vision          behaviors.Vision
+	surroundingAgts []core.IAgent
+
+	syncChan         chan int
+	moveChan         chan core.MoveRequest
+	moveChanResponse chan bool
 
 	pos world.Position
 }
 
+func (d *Drone) SurroundingAgents() []core.IAgent {
+	return d.surroundingAgts
+}
+
 func DroneFactory(
+	env core.IEnvironment,
 	agtId core.AgentID,
 	syncChan chan int,
 ) core.AgentFactory {
 	return func(pos world.Position, moveChan chan core.MoveRequest) core.IAgent {
 		return NewDrone(
+			env,
 			agtId,
 			pos,
 			syncChan,
@@ -48,41 +60,52 @@ func (d *Drone) Start() {
 }
 
 func (d *Drone) Percept() {
-	
+	agts := d.env.Agents()
+	d.surroundingAgts = d.surroundingAgts[:0]
+
+	for _, a := range agts {
+		if d.vision.IsAgentDetected(d.pos, a) {
+			d.surroundingAgts = append(d.surroundingAgts, a)
+		}
+	}
 }
 
 func (d *Drone) Deliberate() {
-	
+
 }
 
 func (d *Drone) Act() {
 	moveChanResponse := make(chan bool)
 	d.moveChan <- core.MoveRequest{Agt: d, ResponseChannel: moveChanResponse}
-	<-moveChanResponse
+	<- moveChanResponse
 }
 
 func (d *Drone) Move() {
 	dir := rand.Intn(4)
 
 	switch dir {
-		case 0:
-			d.pos.X += 0.1
-		case 1:		
-			d.pos.X -= 0.1
-		case 2:		
-			d.pos.Y += 0.1
-		case 3:		
-			d.pos.Y -= 0.1
+	case 0:
+		d.pos.X += 0.1
+	case 1:
+		d.pos.X -= 0.1
+	case 2:
+		d.pos.Y += 0.1
+	case 3:
+		d.pos.Y -= 0.1
 	}
 }
 
-func NewDrone(agtId core.AgentID, pos world.Position, syncChan chan int, moveChan chan core.MoveRequest) *Drone {
+func NewDrone(env core.IEnvironment, agtId core.AgentID, pos world.Position, syncChan chan int, moveChan chan core.MoveRequest) *Drone {
+	center := world.NewPosition(pos.X + 0.5, pos.Y + 0.5)
 	return &Drone{
-		id: agtId, 
-		syncChan: syncChan,
-		moveChan: moveChan,
-		pos:   pos,
+		env:              env,
+		id:               agtId,
+		vision:           behaviors.NewVision(constants.VISION_RANGE),
+		syncChan:         syncChan,
+		moveChan:         moveChan,
+		pos:              center,
 		moveChanResponse: make(chan bool),
+		surroundingAgts:  []core.IAgent{},
 	}
 }
 

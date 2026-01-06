@@ -13,6 +13,8 @@ type IAgent interface {
 	Start()
 	Position() 	world.Position
 	Move()
+
+	SurroundingAgents() []IAgent
 }
 
 type AgentFactory func(pos world.Position, moveChan chan MoveRequest) IAgent

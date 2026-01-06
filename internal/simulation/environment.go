@@ -6,17 +6,19 @@ import (
 )
 
 type Environment struct {
-	Agents 			[]core.IAgent
-	Map    			*world.Map
+	nb int
+	agents []core.IAgent
+	world  *world.Map
 
-	moveChan		chan core.MoveRequest
+	moveChan chan core.MoveRequest
 }
 
 func NewEnvironment(m *world.Map) *Environment {
 	return &Environment{
-		Agents: 	make([]core.IAgent, 0),
-		Map:    	m,
-		moveChan:	make(chan core.MoveRequest),
+		nb: 0,
+		agents:   make([]core.IAgent, 0),
+		world:    m,
+		moveChan: make(chan core.MoveRequest),
 	}
 }
 
@@ -33,5 +35,13 @@ func (e *Environment) moveRequest() {
 }
 
 func (e *Environment) AddAgent(factory core.AgentFactory) {
-	e.Agents = append(e.Agents, factory(e.Map.RandomPosition(), e.moveChan))
+	e.agents = append(e.agents, factory(e.world.RandomPosition(), e.moveChan))
+}
+
+func (e *Environment) World() *world.Map {
+	return e.world
+}
+
+func (e *Environment) Agents() []core.IAgent {
+	return e.agents
 }

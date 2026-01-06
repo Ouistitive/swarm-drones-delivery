@@ -27,7 +27,7 @@ func NewSimulation(m *world.Map) (*Simulation) {
 		agtId := core.AgentID(fmt.Sprintf("Agent_%d", i))
 		syncChan := make(chan int)
 		sim.syncChans.Store(agtId, syncChan)
-		agtFactory := agents.DroneFactory(agtId, syncChan)
+		agtFactory := agents.DroneFactory(sim.Env, agtId, syncChan)
 		sim.Env.AddAgent(agtFactory)
 	}
 
@@ -44,7 +44,7 @@ func (s *Simulation) Run() {
 		}
 	}()
 
-	for _, agt := range s.Env.Agents {
+	for _, agt := range s.Env.Agents() {
 		go agt.Start()
 
 		go func(agt core.IAgent) {
