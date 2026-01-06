@@ -96,14 +96,13 @@ func (d *Drone) Move() {
 }
 
 func NewDrone(env core.IEnvironment, agtId core.AgentID, pos world.Position, syncChan chan int, moveChan chan core.MoveRequest) *Drone {
-	center := world.NewPosition(pos.X + 0.5, pos.Y + 0.5)
 	return &Drone{
 		env:              env,
 		id:               agtId,
 		vision:           behaviors.NewVision(constants.VISION_RANGE),
 		syncChan:         syncChan,
 		moveChan:         moveChan,
-		pos:              center,
+		pos:              pos,
 		moveChanResponse: make(chan bool),
 		surroundingAgts:  []core.IAgent{},
 	}
