@@ -2,7 +2,7 @@ package simulation
 
 import (
 	"fmt"
-	"swarm-drones-delivery/internal/agents"
+	"swarm-drones-delivery/internal/agents/drone"
 	"swarm-drones-delivery/internal/constants"
 	"swarm-drones-delivery/internal/core"
 	"swarm-drones-delivery/internal/world"
@@ -28,7 +28,7 @@ func NewSimulation(m *world.Map) (*Simulation) {
 		agtId := core.AgentID(fmt.Sprintf("Agent_%d", i))
 		syncChan := make(chan int)
 		sim.syncChans.Store(agtId, syncChan)
-		agtFactory := agents.DroneFactory(sim.Env, agtId, syncChan)
+		agtFactory := drone.DroneFactory(sim.Env, agtId, syncChan)
 		sim.Env.AddAgent(agtFactory)
 	}
 
