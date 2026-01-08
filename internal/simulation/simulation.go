@@ -3,6 +3,7 @@ package simulation
 import (
 	"fmt"
 	"swarm-drones-delivery/internal/agents"
+	"swarm-drones-delivery/internal/constants"
 	"swarm-drones-delivery/internal/core"
 	"swarm-drones-delivery/internal/world"
 	"sync"
@@ -20,10 +21,10 @@ func NewSimulation(m *world.Map) (*Simulation) {
 	sim := &Simulation{
 		Env: 			NewEnvironment(m),
 		tickCount: 		0,
-		ticDuration: 	50,
+		ticDuration: 	constants.TIC_DURATION,
 	}
 
-	for i := range 20 {
+	for i := range constants.NB_AGENTS {
 		agtId := core.AgentID(fmt.Sprintf("Agent_%d", i))
 		syncChan := make(chan int)
 		sim.syncChans.Store(agtId, syncChan)

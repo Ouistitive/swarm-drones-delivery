@@ -18,6 +18,7 @@ func main() {
 
 	LAYOUT_PATH := os.Getenv("LAYOUT_PATH")
 	
+	// ebiten.SetFullscreen(true)
 	ebiten.SetWindowSize(constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT)
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
 	ebiten.SetWindowTitle("Swarm drones delivery simulation")

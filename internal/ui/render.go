@@ -20,14 +20,15 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeigh
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	g.DrawMap(screen)
-	if g.isDebugMode {
-		g.DrawLinesBetweenAgents(screen)
+	g.drawMap(screen)
+	if !g.isDebugMode {
+		g.drawLinesBetweenAgents(screen)
+		g.drawLinesBetweenAgentAndTarget(screen)
 	}
-	g.DrawAgents(screen)
+	g.drawAgents(screen)
 }
 
-func (g *Game) DrawMap(screen *ebiten.Image) {
+func (g *Game) drawMap(screen *ebiten.Image) {
 	envMap := g.Sim.Env.World()
 
 	for y := 0.0; y < float64(envMap.Height); y++ {
@@ -43,24 +44,36 @@ func (g *Game) DrawMap(screen *ebiten.Image) {
 	}
 }
 
-func (g *Game) DrawAgents(screen *ebiten.Image) {
+func (g *Game) drawAgents(screen *ebiten.Image) {
 	agts := g.Sim.Env.Agents()
 	
 	for _, agt := range agts {
-		drawX, drawY := g.mapToDrawCoords(agt.Position().X - constants.CENTER_AGENT, agt.Position().Y - constants.CENTER_AGENT)
-		drawImageAt(screen, droneImg, drawX, drawY, nil)
+		targX, targY := g.mapToDrawCoords(agt.TargetPos().X - constants.CENTER_AGENT, agt.TargetPos().Y - constants.CENTER_AGENT)
+		drawImageAt(screen, droneImg, targX, targY, RED)
+		agtX, agtY := g.mapToDrawCoords(agt.Position().X - constants.CENTER_AGENT, agt.Position().Y - constants.CENTER_AGENT)
+		drawImageAt(screen, droneImg, agtX, agtY, nil)
 	}
 }
 
-func (g *Game) DrawLinesBetweenAgents(screen *ebiten.Image) {
+func (g *Game) drawLinesBetweenAgents(screen *ebiten.Image) {
 	agts := g.Sim.Env.Agents()
 
 	for _, agt := range agts {
 		drawX, drawY := g.mapToDrawCoords(agt.Position().X, agt.Position().Y)
 		for _, surrAgt := range agt.SurroundingAgents() {
 			surrAgtX, surrAgtY := g.mapToDrawCoords(surrAgt.Position().X, surrAgt.Position().Y)
-			vector.StrokeLine(screen, float32(drawX), float32(drawY), float32(surrAgtX), float32(surrAgtY), 1, color.RGBA{0, 100, 255, 255}, false)
+			vector.StrokeLine(screen, float32(drawX), float32(drawY), float32(surrAgtX), float32(surrAgtY), 2, color.RGBA{0, 100, 255, 255}, false)
 		}
+	}
+}
+
+func (g *Game) drawLinesBetweenAgentAndTarget(screen *ebiten.Image) {
+	agts := g.Sim.Env.Agents()
+
+	for _, agt := range agts {
+		drawX, drawY := g.mapToDrawCoords(agt.Position().X, agt.Position().Y)
+		tX, tY := g.mapToDrawCoords(agt.TargetPos().X, agt.TargetPos().Y)
+		vector.StrokeLine(screen, float32(drawX), float32(drawY), float32(tX), float32(tY), 1, color.RGBA{255, 0, 0, 255}, false)
 	}
 }
 

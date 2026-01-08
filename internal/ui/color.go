@@ -19,4 +19,9 @@ func init() {
 	WHITE.SetR(255)
 	WHITE.SetG(255)
 	WHITE.SetB(255)
+
+	RED = &ebiten.ColorScale{}
+	RED.SetR(255)
+	RED.SetG(0)
+	RED.SetB(0)
 }

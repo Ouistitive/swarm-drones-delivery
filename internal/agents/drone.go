@@ -2,7 +2,9 @@ package agents
 
 import (
 	"fmt"
-	"math/rand"
+	"math"
+	"time"
+
 	"swarm-drones-delivery/internal/agents/behaviors"
 	"swarm-drones-delivery/internal/constants"
 	"swarm-drones-delivery/internal/core"
@@ -20,7 +22,14 @@ type Drone struct {
 	moveChan         chan core.MoveRequest
 	moveChanResponse chan bool
 
-	pos world.Position
+	pos 			world.Position
+	targetPos		world.Position
+	targetDir 		world.Position
+	currentDir 		world.Position
+	velocity 		float64
+
+	t time.Time
+
 }
 
 func (d *Drone) SurroundingAgents() []core.IAgent {
@@ -71,7 +80,12 @@ func (d *Drone) Percept() {
 }
 
 func (d *Drone) Deliberate() {
-
+	if time.Since(d.t) >= 3 * time.Second {
+		d.generateTargetPosition()
+		d.changeTargetAngle()
+		
+		d.t = time.Now()
+	}
 }
 
 func (d *Drone) Act() {
@@ -81,22 +95,36 @@ func (d *Drone) Act() {
 }
 
 func (d *Drone) Move() {
-	dir := rand.Intn(4)
+	dir, distance := d.vectorToTarget()
 
-	switch dir {
-	case 0:
-		d.pos.X += 0.1
-	case 1:
-		d.pos.X -= 0.1
-	case 2:
-		d.pos.Y += 0.1
-	case 3:
-		d.pos.Y -= 0.1
+	// If the drone is close enough to the target, the drone is "glued" to the target pos
+	if distance <= constants.CLOSE_TO_TARGET {
+		d.pos = d.targetPos
+		d.velocity = 0
+		return
 	}
+
+	d.targetDir = dir
+	if d.currentDir.X < d.targetDir.X {
+		d.currentDir.X += constants.INCREMENTAL_DIRECTION
+	} else if d.currentDir.X > d.targetDir.X {
+		d.currentDir.X -= constants.INCREMENTAL_DIRECTION
+	}
+
+	if d.currentDir.Y < d.targetDir.Y {
+		d.currentDir.Y += constants.INCREMENTAL_DIRECTION
+	} else if d.currentDir.Y > d.targetDir.Y {
+		d.currentDir.Y -= constants.INCREMENTAL_DIRECTION
+	}
+
+	d.adjustVelocity(distance)
+	d.pos.X += d.currentDir.X * d.velocity
+	d.pos.Y += d.currentDir.Y * d.velocity
 }
 
 func NewDrone(env core.IEnvironment, agtId core.AgentID, pos world.Position, syncChan chan int, moveChan chan core.MoveRequest) *Drone {
 	return &Drone{
+		t: time.Now(),
 		env:              env,
 		id:               agtId,
 		vision:           behaviors.NewVision(constants.VISION_RANGE),
@@ -105,9 +133,62 @@ func NewDrone(env core.IEnvironment, agtId core.AgentID, pos world.Position, syn
 		pos:              pos,
 		moveChanResponse: make(chan bool),
 		surroundingAgts:  []core.IAgent{},
+		targetDir: 		  world.NullPosition(),
+		currentDir: 	  world.NullPosition(),
+		targetPos: 		  env.World().RandomPosition(),
+		velocity: 		  0.0,
 	}
 }
 
 func (d *Drone) Position() world.Position {
 	return d.pos
+}
+
+func (d *Drone) generateTargetPosition() {
+	d.targetPos = d.env.World().RandomPosition()
+}
+
+func (d *Drone) adjustVelocity(distance float64) {
+	targetVelocity := constants.MAX_VELOCITY
+
+	if distance < constants.LOW_DISTANCE {
+		targetVelocity = math.Max(
+			constants.MIN_VELOCITY,
+			constants.MAX_VELOCITY * (distance / constants.LOW_DISTANCE),
+		)
+	}
+
+	if d.velocity < targetVelocity {
+		d.velocity = math.Min(
+			targetVelocity,
+			d.velocity + constants.INCREMENTAL_VELOCITY,
+		)
+	} else {
+		d.velocity = targetVelocity
+	}
+}
+
+func (d *Drone) changeTargetAngle() {
+	d.targetDir, _ = d.vectorToTarget()
+	// If the drone is slow enough, the direction goes automatically to the target dir 
+	if d.velocity < constants.SLOW_VELOCITY_THRESHOLD {
+		d.currentDir = d.targetDir
+	}
+}
+
+func (d *Drone) TargetPos() world.Position {
+	return d.targetPos
+}
+
+func (d *Drone) vectorToTarget() (dir world.Position, distance float64) {
+	dx := d.targetPos.X - d.pos.X
+	dy := d.targetPos.Y - d.pos.Y
+
+	distance = math.Hypot(dx, dy)
+	if distance <= constants.CLOSE_TO_TARGET {
+		return world.NullPosition(), 0
+	}
+	
+	dir = world.Position{X: dx / distance, Y: dy / distance}
+	return
 }

@@ -16,6 +16,10 @@ func NewPosition(x, y float64) Position {
 	return Position{ X: x, Y: y }
 }
 
+func NullPosition() Position {
+	return NewPosition(0.0, 0.0)
+}
+
 func (m *Map) RandomPosition() Position {
 	return NewPosition(
 		rand.Float64() * float64(m.Width-1), 
