@@ -13,6 +13,7 @@ type IAgent interface {
 	Start()
 	Position() 	world.Position
 	Move()
+	TargetPos() world.Position
 
 	SurroundingAgents() []IAgent
 }
