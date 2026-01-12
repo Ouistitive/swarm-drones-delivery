@@ -6,7 +6,7 @@ import (
 )
 
 func ReadMap(mapPath string) (*Map, error) {
-    content, err := os.ReadFile(mapPath)
+	content, err := os.ReadFile(mapPath)
 	if err != nil {
 		return nil, err
 	}
@@ -18,6 +18,7 @@ func loadMap(content string) *Map {
 	lines := strings.Split(content, "\n")
 	cells := make([][]rune, 0)
 	walls := make([]Position, 0)
+	spawners := make([]Position, 0)
 
 	y := 0.0
 	for _, line := range lines {
@@ -27,12 +28,13 @@ func loadMap(content string) *Map {
 			switch r {
 			case 'W':
 				walls = append(walls, NewPosition(float64(x), y))
-				
+			case 'S':
+				spawners = append(spawners, NewPosition(float64(x), y))
 			}
 		}
 
 		y++
 	}
-	
-	return &Map{Width: len(lines[0]), Height: len(lines), Cells: cells, Walls: walls}
+
+	return &Map{Width: len(lines[0]), Height: len(lines), Cells: cells, Walls: walls, Spawners: spawners}
 }

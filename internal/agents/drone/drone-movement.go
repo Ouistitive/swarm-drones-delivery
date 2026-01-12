@@ -1,6 +1,7 @@
 package drone
 
 import (
+	"fmt"
 	"math"
 	"swarm-drones-delivery/internal/constants"
 	"swarm-drones-delivery/internal/world"
@@ -37,6 +38,7 @@ func (d *Drone) Move() {
 
 func (d *Drone) generateTargetPosition() {
 	d.targetPos = d.env.World().RandomPosition()
+	fmt.Println(d.targetPos)
 }
 
 func (d *Drone) adjustVelocity(distance float64) {

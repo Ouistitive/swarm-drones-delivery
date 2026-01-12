@@ -3,6 +3,7 @@ package ui
 import (
 	"image/color"
 	"swarm-drones-delivery/internal/constants"
+	"swarm-drones-delivery/internal/core"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/vector"
@@ -42,43 +43,46 @@ func (g *Game) drawMap(screen *ebiten.Image) {
 		drawX, drawY := g.mapToDrawCoords(pos.X, pos.Y)
 		drawImageAt(screen, groundImg, drawX, drawY, BLACK)
 	}
+
+	for _, pos := range envMap.Spawners {
+		drawX, drawY := g.mapToDrawCoords(pos.X, pos.Y)
+		drawImageAt(screen, groundImg, drawX, drawY, RED)
+	}
 }
 
 func (g *Game) drawAgents(screen *ebiten.Image) {
-	agts := g.Sim.Env.Agents()
-	
-	for _, agt := range agts {
-		targX, targY := g.mapToDrawCoords(agt.TargetPos().X - constants.CENTER_AGENT, agt.TargetPos().Y - constants.CENTER_AGENT)
+	g.forEachSpawnedAgents(func(agt core.IAgent) {
+		targX, targY := g.mapToDrawCoords(agt.TargetPos().X, agt.TargetPos().Y)
 		drawImageAt(screen, droneImg, targX, targY, RED)
-		agtX, agtY := g.mapToDrawCoords(agt.Position().X - constants.CENTER_AGENT, agt.Position().Y - constants.CENTER_AGENT)
+		agtX, agtY := g.mapToDrawCoords(agt.Position().X, agt.Position().Y)
 		drawImageAt(screen, droneImg, agtX, agtY, nil)
-	}
+	})
 }
 
 func (g *Game) drawLinesBetweenAgents(screen *ebiten.Image) {
-	agts := g.Sim.Env.Agents()
-
-	for _, agt := range agts {
-		drawX, drawY := g.mapToDrawCoords(agt.Position().X, agt.Position().Y)
+	g.forEachSpawnedAgents(func(agt core.IAgent) {
+		drawX, drawY := g.mapToDrawCoordsCentered(agt.Position().X, agt.Position().Y)
 		for _, surrAgt := range agt.SurroundingAgents() {
-			surrAgtX, surrAgtY := g.mapToDrawCoords(surrAgt.Position().X, surrAgt.Position().Y)
+			surrAgtX, surrAgtY := g.mapToDrawCoordsCentered(surrAgt.Position().X, surrAgt.Position().Y)
 			vector.StrokeLine(screen, float32(drawX), float32(drawY), float32(surrAgtX), float32(surrAgtY), 2, color.RGBA{0, 100, 255, 255}, false)
 		}
-	}
+	})
 }
 
 func (g *Game) drawLinesBetweenAgentAndTarget(screen *ebiten.Image) {
-	agts := g.Sim.Env.Agents()
-
-	for _, agt := range agts {
-		drawX, drawY := g.mapToDrawCoords(agt.Position().X, agt.Position().Y)
-		tX, tY := g.mapToDrawCoords(agt.TargetPos().X, agt.TargetPos().Y)
+	g.forEachSpawnedAgents(func(agt core.IAgent) {
+		drawX, drawY := g.mapToDrawCoordsCentered(agt.Position().X, agt.Position().Y)
+		tX, tY := g.mapToDrawCoordsCentered(agt.TargetPos().X, agt.TargetPos().Y)
 		vector.StrokeLine(screen, float32(drawX), float32(drawY), float32(tX), float32(tY), 1, color.RGBA{255, 0, 0, 255}, false)
-	}
+	})
 }
 
 func (g *Game) mapToDrawCoords(mapX float64, mapY float64) (float64, float64) {
 	return mapX * float64(constants.CELL_SIZE), mapY * float64(constants.CELL_SIZE)
+}
+
+func (g *Game) mapToDrawCoordsCentered(mapX float64, mapY float64) (float64, float64) {
+	return mapX * float64(constants.CELL_SIZE) + constants.HALF_CELL_SIZE, mapY * float64(constants.CELL_SIZE) + constants.HALF_CELL_SIZE
 }
 
 func drawImageAt(screen *ebiten.Image, img *ebiten.Image, x, y float64, colorScale *ebiten.ColorScale) {
@@ -91,7 +95,14 @@ func drawImageAt(screen *ebiten.Image, img *ebiten.Image, x, y float64, colorSca
 	}
 
 	options.GeoM.Scale(float64(constants.CELL_SIZE)/float64(img.Bounds().Dx()), float64(constants.CELL_SIZE)/float64(img.Bounds().Dy()))
-	options.GeoM.Translate(float64(x), float64(y))
-
+	options.GeoM.Translate(x, y)
 	screen.DrawImage(img, options)
+}
+
+func (g *Game) forEachSpawnedAgents(f func(agt core.IAgent)) {
+	agts := g.Sim.Env.SpawnedAgents()
+
+	for _, agt := range agts {
+		f(agt)
+	}
 }

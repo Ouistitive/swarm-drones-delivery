@@ -10,15 +10,16 @@ import (
 )
 
 type Drone struct {
-	id  core.AgentID
-	env core.IEnvironment
+	id  			core.AgentID
+	env 			core.IEnvironment
+	hasSpawned 		bool
 
 	vision          behaviors.Vision
 	surroundingAgts []core.IAgent
 
-	syncChan         chan int
-	moveChan         chan core.MoveRequest
-	moveChanResponse chan bool
+	syncChan        chan int
+	moveChan        chan core.MoveRequest
+	spawnChan 		chan core.SpawnRequest
 
 	pos 			world.Position
 	targetPos		world.Position
@@ -28,6 +29,10 @@ type Drone struct {
 
 	t time.Time
 
+}
+
+func (d *Drone) Spawned() bool {
+	return d.hasSpawned
 }
 
 func (d *Drone) SurroundingAgents() []core.IAgent {
@@ -49,6 +54,12 @@ func (d *Drone) TargetPos() world.Position {
 func (d *Drone) Start() {
 	fmt.Println("Drone started:", d.id)
 
+	for !d.hasSpawned {
+		startChanResponse := make(chan bool)
+		d.spawnChan <- core.SpawnRequest{Agt: d, ResponseChannel: startChanResponse}
+		d.hasSpawned = <- startChanResponse
+	}
+
 	for {
 		step := <-d.syncChan
 		d.Percept()
@@ -59,7 +70,7 @@ func (d *Drone) Start() {
 }
 
 func (d *Drone) Percept() {
-	agts := d.env.Agents()
+	agts := d.env.SpawnedAgents()
 	d.surroundingAgts = d.surroundingAgts[:0]
 
 	for _, a := range agts {

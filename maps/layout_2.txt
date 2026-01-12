@@ -23,6 +23,7 @@ B                                                                               
 B                                                                                                      B
 B                                                                                                      B
 B                                                                                                      B
+B                                           S                                                          B
 B                                                                                                      B
 B                                                                                                      B
 B                                                                                                      B
@@ -36,8 +37,7 @@ B                                                                               
 B                                                                                                      B
 B                                                                                                      B
 B                                                                                                      B
-B                                                                                                      B
-B                                                                                                      B
+B                                                                               S                      B
 B                                                                                                      B
 B                                                                                                      B
 B                                                                                                      B
