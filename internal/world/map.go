@@ -1,37 +1,24 @@
 package world
 
-import "math/rand/v2"
+import (
+	"math"
+	"math/rand"
+)
 
-type Position struct {
-	X, Y float64
-}
 
 type Map struct {
 	Width, Height int
-	Cells [][]rune
-	Walls []Position
-}
-
-func NewPosition(x, y float64) Position {
-	return Position{ X: x, Y: y }
-}
-
-func NullPosition() Position {
-	return NewPosition(0.0, 0.0)
-}
-
-func (m *Map) RandomPosition() Position {
-	return NewPosition(
-		rand.Float64() * float64(m.Width-1), 
-		rand.Float64() * float64(m.Height-1),
-	)
+	Cells         [][]rune
+	Walls         []Position
+	Spawners      []Position
 }
 
 func NewMap(width, height int) *Map {
 	m := &Map{
-		Width: width,
-		Height: height,
-		Walls: make([]Position, 0),
+		Width:    width,
+		Height:   height,
+		Walls:    make([]Position, 0),
+		Spawners: make([]Position, 0),
 	}
 
 	m.Cells = make([][]rune, height)
@@ -40,4 +27,16 @@ func NewMap(width, height int) *Map {
 	}
 
 	return m
+}
+
+func (m *Map) RandomPosition() Position {
+	return NewPosition(
+		math.Round(rand.Float64()*float64(m.Width-1)),
+		math.Round(rand.Float64()*float64(m.Height-1)),
+	)
+}
+
+func (m *Map) RandomSpawner() (Position, int) {
+	n := rand.Intn(len(m.Spawners))
+    return m.Spawners[n], n
 }
