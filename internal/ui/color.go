@@ -7,6 +7,7 @@ var (
 	WHITE 	*ebiten.ColorScale
 
 	RED 	*ebiten.ColorScale
+	YELLOW	*ebiten.ColorScale
 )
 
 func init() {
@@ -24,4 +25,9 @@ func init() {
 	RED.SetR(255)
 	RED.SetG(0)
 	RED.SetB(0)
+
+	YELLOW = &ebiten.ColorScale{}
+	YELLOW.SetR(255)
+	YELLOW.SetG(0)
+	YELLOW.SetB(255)
 }

@@ -22,10 +22,13 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeigh
 
 func (g *Game) Draw(screen *ebiten.Image) {
 	g.drawMap(screen)
+	g.drawObjects(screen)
+
 	if !g.isDebugMode {
 		g.drawLinesBetweenAgents(screen)
 		g.drawLinesBetweenAgentAndTarget(screen)
 	}
+
 	g.drawAgents(screen)
 }
 
@@ -47,6 +50,15 @@ func (g *Game) drawMap(screen *ebiten.Image) {
 	for _, pos := range envMap.Spawners {
 		drawX, drawY := g.mapToDrawCoords(pos.X, pos.Y)
 		drawImageAt(screen, groundImg, drawX, drawY, RED)
+	}
+}
+
+func (g *Game) drawObjects(screen *ebiten.Image) {
+	objs := g.Sim.Env.Objects()
+
+	for _, obj := range objs {
+		objX, objY := g.mapToDrawCoords(obj.Position().X, obj.Position().Y)
+		drawImageAt(screen, deliveryImg, objX, objY, YELLOW)
 	}
 }
 
