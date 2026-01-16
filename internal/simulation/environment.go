@@ -3,16 +3,18 @@ package simulation
 import (
 	"swarm-drones-delivery/internal/constants"
 	"swarm-drones-delivery/internal/core"
+	"swarm-drones-delivery/internal/objects"
 	"swarm-drones-delivery/internal/world"
 	"time"
 )
 
 type Environment struct {
-	agents 			[]core.IAgent
-	spawnedAgents	[]core.IAgent
-	world  *world.Map
+	agents        []core.IAgent
+	spawnedAgents []core.IAgent
+	world         *world.Map
+	objects       []objects.Delivery
 
-	moveChan  chan core.MoveRequest
+	moveChan   chan core.MoveRequest
 	spawnChans []chan core.SpawnRequest
 }
 
@@ -23,16 +25,19 @@ func NewEnvironment(m *world.Map) *Environment {
 	}
 
 	return &Environment{
-		agents:    make([]core.IAgent, 0),
-		world:     m,
-		moveChan:  make(chan core.MoveRequest),
-		spawnChans: spawnChans,
+		agents:        make([]core.IAgent, 0),
+		spawnedAgents: make([]core.IAgent, 0),
+		world:         m,
+		objects:       make([]objects.Delivery, 0),
+		moveChan:      make(chan core.MoveRequest),
+		spawnChans:    spawnChans,
 	}
 }
 
 func (e *Environment) Start() {
 	go e.spawnRequest()
 	go e.moveRequest()
+	go e.spawnRandomDelivery()
 }
 
 func (e *Environment) moveRequest() {
@@ -55,8 +60,15 @@ func (e *Environment) spawnRequest() {
 	}
 }
 
+func (e *Environment) spawnRandomDelivery() {
+	for {
+		e.objects = append(e.objects, *objects.NewDelivery("", e.world.RandomPosition()))
+		time.Sleep(time.Second)
+	}
+}
+
 func (e *Environment) AddAgent(factory core.AgentFactory) {
-	randomPos, idx :=e.world.RandomSpawner()
+	randomPos, idx := e.world.RandomSpawner()
 	e.agents = append(e.agents, factory(randomPos, e.moveChan, e.spawnChans[idx]))
 }
 
@@ -69,5 +81,9 @@ func (e *Environment) Agents() []core.IAgent {
 }
 
 func (e *Environment) SpawnedAgents() []core.IAgent {
-    return e.spawnedAgents
+	return e.spawnedAgents
+}
+
+func (e *Environment) Objects() []objects.Delivery {
+	return e.objects
 }
