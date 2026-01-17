@@ -4,6 +4,12 @@ import "swarm-drones-delivery/internal/world"
 
 type AgentID string
 
+type Mission struct {
+    TargetDelivery  *Delivery
+    GrabbedDelivery *Delivery
+    Destination     world.Position
+}
+
 type IAgent interface {
 	ID() 		AgentID
 	Start()
@@ -14,9 +20,11 @@ type IAgent interface {
 	Spawned() 	bool
 	Position() 	world.Position
 	Move()
+	Mission() 	Mission
+	GrabDelivery(del *Delivery)
 	TargetPos() world.Position
 
 	SurroundingAgents() []IAgent
 }
 
-type AgentFactory func(pos world.Position, moveChan chan MoveRequest, spawnChan chan SpawnRequest) IAgent
+type AgentFactory func(pos world.Position, moveChan chan MoveRequest, pickChan chan PickRequest, spawnChan chan SpawnRequest) IAgent

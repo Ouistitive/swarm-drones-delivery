@@ -6,29 +6,50 @@ import (
 
 	"swarm-drones-delivery/internal/agents/behaviors"
 	"swarm-drones-delivery/internal/core"
+	"swarm-drones-delivery/internal/utils"
 	"swarm-drones-delivery/internal/world"
 )
 
+type AgentState int
+
+const (
+	StateWandering AgentState = iota
+	StateMovingToTarget
+	StateGrabbing
+)
+
+type ActionType int
+
+const (
+	ActionMove ActionType = iota
+	ActionPick
+)
+
 type Drone struct {
-	id  			core.AgentID
-	env 			core.IEnvironment
-	hasSpawned 		bool
+	id         core.AgentID
+	env        core.IEnvironment
+	hasSpawned bool
 
 	vision          behaviors.Vision
 	surroundingAgts []core.IAgent
 
-	syncChan        chan int
-	moveChan        chan core.MoveRequest
-	spawnChan 		chan core.SpawnRequest
+	syncChan  chan int
+	moveChan  chan core.MoveRequest
+	pickChan  chan core.PickRequest
+	spawnChan chan core.SpawnRequest
 
-	pos 			world.Position
-	targetPos		world.Position
-	targetDir 		world.Position
-	currentDir 		world.Position
-	velocity 		float64
+	pos        world.Position
+	targetPos  world.Position
+	targetDir  world.Position
+	currentDir world.Position
+	velocity   float64
+
+	state      AgentState
+	nextAction ActionType
+
+	mission core.Mission
 
 	t time.Time
-
 }
 
 func (d *Drone) Spawned() bool {
@@ -51,13 +72,17 @@ func (d *Drone) TargetPos() world.Position {
 	return d.targetPos
 }
 
+func (d *Drone) Mission() core.Mission {
+	return d.mission
+}
+
 func (d *Drone) Start() {
 	fmt.Println("Drone started:", d.id)
 
 	for !d.hasSpawned {
 		startChanResponse := make(chan bool)
 		d.spawnChan <- core.SpawnRequest{Agt: d, ResponseChannel: startChanResponse}
-		d.hasSpawned = <- startChanResponse
+		d.hasSpawned = <-startChanResponse
 	}
 
 	for {
@@ -81,16 +106,37 @@ func (d *Drone) Percept() {
 }
 
 func (d *Drone) Deliberate() {
-	if time.Since(d.t) >= 3 * time.Second {
-		d.generateTargetPosition()
-		d.changeTargetAngle()
-		
-		d.t = time.Now()
+	switch d.state {
+	// case StateWandering:
+	// 	if time.Since(d.t) >= 3*time.Second {
+	// 		d.generateTargetPosition()
+	// 		d.changeTargetAngle()
+
+	// 		d.t = time.Now()
+	// 	}
+	case StateMovingToTarget:
+		if time.Since(d.t) >= 3*time.Second {
+			d.generateTargetPosition()
+			d.changeTargetAngle()
+
+			d.t = time.Now()
+		}
+
+		if d.mission.TargetDelivery != nil && utils.GetDistance(d.mission.TargetDelivery.Position(), d.pos) < 0.1 {
+			d.state = StateGrabbing
+			d.nextAction = ActionPick
+		}
+	case StateGrabbing:
+		d.state = StateMovingToTarget
+		d.nextAction = ActionMove
 	}
 }
 
 func (d *Drone) Act() {
-	moveChanResponse := make(chan bool)
-	d.moveChan <- core.MoveRequest{Agt: d, ResponseChannel: moveChanResponse}
-	<- moveChanResponse
+	switch d.nextAction {
+	case ActionMove:
+		d.move()
+	case ActionPick:
+		d.grab()
+	}
 }

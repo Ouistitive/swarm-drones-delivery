@@ -9,3 +9,9 @@ type SpawnRequest struct {
 	Agt IAgent
 	ResponseChannel chan bool
 }
+
+type PickRequest struct {
+	Agt IAgent
+	Deliv *Delivery
+	ResponseChannel chan bool
+}
