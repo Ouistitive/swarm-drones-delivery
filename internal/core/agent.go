@@ -4,12 +4,6 @@ import "swarm-drones-delivery/internal/world"
 
 type AgentID string
 
-type Mission struct {
-    TargetDelivery  *Delivery
-    GrabbedDelivery *Delivery
-    Destination     world.Position
-}
-
 type IAgent interface {
 	ClickableEntity
 	
@@ -22,7 +16,7 @@ type IAgent interface {
 	Spawned() 	bool
 	Position() 	world.Position
 	Move()
-	Mission() 	Mission
+	Mission() 	*Mission
 	GrabDelivery(del *Delivery)
 	TargetPos() world.Position
 

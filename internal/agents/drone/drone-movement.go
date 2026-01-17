@@ -13,7 +13,7 @@ func (d *Drone) Move() {
 
 	// If the drone is close enough to the target, the drone is "glued" to the target pos
 	if distance <= constants.CLOSE_TO_TARGET {
-		d.pos = d.targetPos
+		d.pos = d.mission.TargetDelivery.Position()
 		d.velocity = 0
 		return
 	}
@@ -41,8 +41,7 @@ func (d *Drone) GrabDelivery(del *core.Delivery) {
 }
 
 func (d *Drone) generateTargetPosition() {
-	d.mission.TargetDelivery = &d.env.Objects()[rand.Intn(len(d.env.Objects()))]
-	d.targetPos = d.mission.TargetDelivery.Position()
+	d.mission = &d.env.Missions()[rand.Intn(len(d.env.Missions()))]
 }
 
 func (d *Drone) adjustVelocity(distance float64) {
@@ -74,8 +73,8 @@ func (d *Drone) changeTargetAngle() {
 }
 
 func (d *Drone) vectorToTarget() (dir world.Position, distance float64) {
-	dx := d.targetPos.X - d.pos.X
-	dy := d.targetPos.Y - d.pos.Y
+	dx := d.mission.TargetDelivery.Position().X - d.pos.X
+	dy := d.mission.TargetDelivery.Position().Y - d.pos.Y
 
 	distance = math.Hypot(dx, dy)
 	if distance <= constants.CLOSE_TO_TARGET {

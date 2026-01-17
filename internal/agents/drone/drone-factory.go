@@ -24,9 +24,8 @@ func NewDrone(env core.IEnvironment, agtId core.AgentID, pos world.Position, syn
 		surroundingAgts: []core.IAgent{},
 		targetDir:       world.NullPosition(),
 		currentDir:      world.NullPosition(),
-		targetPos:       env.World().RandomPosition(),
 		velocity:        0.0,
-		state:           StateMovingToTarget,
+		state:           StateWandering,
 	}
 }
 
