@@ -70,7 +70,7 @@ func (g *Game) drawAgents(screen *ebiten.Image) {
         drawImageAt(screen, droneImg, agtX, agtY, nil)
 
         // Si le drone transporte un colis, dessine-le sur le drone
-        if drone, ok := agt.(*drone.Drone); ok && drone.Mission().GrabbedDelivery != nil {
+        if drone, ok := agt.(*drone.Drone); ok && drone.Mission() != nil && drone.Mission().GrabbedDelivery != nil {
             pos := drone.Mission().GrabbedDelivery.Position()
             objX, objY := g.mapToDrawCoords(pos.X, pos.Y)
             drawImageAt(screen, deliveryImg, objX, objY, YELLOW)

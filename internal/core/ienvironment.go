@@ -9,4 +9,6 @@ type IEnvironment interface {
 	SpawnedAgents()	[]IAgent
 	World() 		*world.Map
 	Objects()		[]Delivery
+
+	Missions()		[]Mission
 }

@@ -39,7 +39,6 @@ type Drone struct {
 	spawnChan chan core.SpawnRequest
 
 	pos        world.Position
-	targetPos  world.Position
 	targetDir  world.Position
 	currentDir world.Position
 	velocity   float64
@@ -47,7 +46,7 @@ type Drone struct {
 	state      AgentState
 	nextAction ActionType
 
-	mission core.Mission
+	mission *core.Mission
 
 	t time.Time
 }
@@ -69,10 +68,13 @@ func (d *Drone) Position() world.Position {
 }
 
 func (d *Drone) TargetPos() world.Position {
-	return d.targetPos
+	if d.mission != nil {
+		return d.mission.TargetDelivery.Position()
+	}
+	return world.NewPosition(0, 0)
 }
 
-func (d *Drone) Mission() core.Mission {
+func (d *Drone) Mission() *core.Mission {
 	return d.mission
 }
 
@@ -107,28 +109,23 @@ func (d *Drone) Percept() {
 
 func (d *Drone) Deliberate() {
 	switch d.state {
-	// case StateWandering:
-	// 	if time.Since(d.t) >= 3*time.Second {
-	// 		d.generateTargetPosition()
-	// 		d.changeTargetAngle()
-
-	// 		d.t = time.Now()
-	// 	}
-	case StateMovingToTarget:
-		if time.Since(d.t) >= 3*time.Second {
+	case StateWandering:
+		if time.Since(d.t) >= 5*time.Second || d.mission == nil {
 			d.generateTargetPosition()
 			d.changeTargetAngle()
-
 			d.t = time.Now()
-		}
 
+			if d.mission.TargetDelivery != nil {
+				d.setDroneStateAndAction(StateMovingToTarget, ActionMove)
+			}
+		}
+	case StateMovingToTarget:
+		d.setDroneStateAndAction(StateMovingToTarget, ActionMove)
 		if d.mission.TargetDelivery != nil && utils.GetDistance(d.mission.TargetDelivery.Position(), d.pos) < 0.1 {
-			d.state = StateGrabbing
-			d.nextAction = ActionPick
+			d.setDroneStateAndAction(StateGrabbing, ActionPick)
 		}
 	case StateGrabbing:
-		d.state = StateMovingToTarget
-		d.nextAction = ActionMove
+		d.setDroneStateAndAction(StateMovingToTarget, ActionMove)
 	}
 }
 

@@ -1,6 +1,13 @@
 package drone
 
-import "swarm-drones-delivery/internal/core"
+import (
+	"swarm-drones-delivery/internal/core"
+)
+
+func (d *Drone) setDroneStateAndAction(state AgentState, act ActionType) {
+	d.state = state
+	d.nextAction = act
+}
 
 func (d *Drone) move() {
 	moveChanResponse := make(chan bool)

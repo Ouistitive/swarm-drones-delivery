@@ -1,7 +1,6 @@
 package simulation
 
 import (
-	"fmt"
 	"swarm-drones-delivery/internal/constants"
 	"swarm-drones-delivery/internal/core"
 	"swarm-drones-delivery/internal/world"
@@ -13,6 +12,7 @@ type Environment struct {
 	spawnedAgents []core.IAgent
 	world         *world.Map
 	objects       []core.Delivery
+	missions 	  []core.Mission
 
 	moveChan   	chan core.MoveRequest
 	pickchan	chan core.PickRequest
@@ -66,7 +66,6 @@ func (e *Environment) spawnRequest() {
 func (e *Environment) pickRequest() {
 	for pickRequest := range e.pickchan {
 		del := pickRequest.Deliv
-		fmt.Println(del)
 		if del.State == core.GRABBED || del.State == core.DELIVERED {
 			pickRequest.ResponseChannel <- false
 		}
@@ -80,7 +79,9 @@ func (e *Environment) pickRequest() {
 
 func (e *Environment) spawnRandomDelivery() {
 	for {
-		e.objects = append(e.objects, *core.NewDelivery("", e.world.RandomPosition()))
+		newDel := core.NewDelivery("", e.world.RandomPosition())
+		e.objects = append(e.objects, *newDel)
+		e.missions = append(e.missions, *core.NewMission(newDel, e.world.RandomPosition()))
 		time.Sleep(time.Second)
 	}
 }
@@ -104,4 +105,8 @@ func (e *Environment) SpawnedAgents() []core.IAgent {
 
 func (e *Environment) Objects() []core.Delivery {
 	return e.objects
+}
+
+func (e *Environment) Missions() []core.Mission {
+	return e.missions
 }
