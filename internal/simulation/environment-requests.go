@@ -51,6 +51,7 @@ func (e *Environment) deliverRequest() {
 
 		agt := deliverRequest.Agt
 		del.State = core.DELIVERED
+		del.SetPosition(agt.Position())
 		del.Carrier = nil
 		e.removeMission(*agt.Mission())
 
@@ -61,13 +62,14 @@ func (e *Environment) deliverRequest() {
 func (e *Environment) removeMission(toRemove core.Mission) {
 	for i, m := range e.missions {
 		if m.Id == toRemove.Id {
+			m.TargetDelivery = nil
 			e.missions = append(e.missions[:i], e.missions[i+1:]...)
 		}
 	}
 }
 
 func (e *Environment) generateMissions() {
-	for range 3{
+	for {
 		e.missions = append(e.missions, *core.NewMission(core.NewDelivery(e.world.RandomPosition()), e.world.RandomPosition()))
 		time.Sleep(time.Second)
 	}

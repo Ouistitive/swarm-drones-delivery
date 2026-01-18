@@ -27,6 +27,10 @@ func NewDelivery(pos world.Position) *Delivery {
 	}
 }
 
+func (d *Delivery) SetPosition(newPos world.Position) {
+	d.pos = newPos
+}
+
 func (d *Delivery) Position() world.Position {
 	if d.Carrier != nil && d.State == GRABBED {
 		return d.Carrier.Position()

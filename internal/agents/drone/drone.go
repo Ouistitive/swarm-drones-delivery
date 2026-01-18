@@ -114,7 +114,7 @@ func (d *Drone) Percept() {
 }
 
 func (d *Drone) Deliberate() {
-	// fmt.Println(d.id, d.state, d.mission)
+	fmt.Println(d.id, d.state, d.mission)
 	switch d.state {
 	case StateWandering:
 		if time.Since(d.t) >= time.Second || d.mission == nil {
@@ -122,7 +122,7 @@ func (d *Drone) Deliberate() {
 			d.changeTargetAngle()
 			d.t = time.Now()
 
-			if d.mission.TargetDelivery != nil {
+			if d.mission != nil && d.mission.TargetDelivery != nil {
 				d.targetPos = d.mission.TargetDelivery.Position()
 				d.setDroneStateAndAction(StateMovingToDelivery, ActionMove)
 			}

@@ -1,7 +1,6 @@
 package simulation
 
 import (
-	"fmt"
 	"swarm-drones-delivery/internal/core"
 	"swarm-drones-delivery/internal/world"
 )
@@ -51,7 +50,6 @@ func (e *Environment) AddAgent(factory core.AgentFactory) {
 }
 
 func (e *Environment) World() *world.Map {
-	fmt.Println(e.missions)
 	return e.world
 }
 
