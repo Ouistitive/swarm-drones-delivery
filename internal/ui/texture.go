@@ -2,9 +2,13 @@ package ui
 
 import (
 	"log"
+	"os"
+	"swarm-drones-delivery/internal/ui/hud"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"golang.org/x/image/font"
+	"golang.org/x/image/font/opentype"
 )
 
 var (
@@ -30,4 +34,20 @@ func init() {
 	if err != nil {
 		log.Printf("Warning: Could not load delivery.png: %v", err)
 	}
+
+	fontBytes, err := os.ReadFile("assets/fonts/Monaco.ttf")
+	if err != nil {
+		panic(err)
+	}
+
+	ttf, err := opentype.Parse(fontBytes)
+	if err != nil {
+		panic(err)
+	}
+
+	hud.FONT, err = opentype.NewFace(ttf, &opentype.FaceOptions{
+		Size:    16,
+		DPI:     96,
+		Hinting: font.HintingFull,
+	})
 }
