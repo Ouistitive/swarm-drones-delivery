@@ -14,8 +14,10 @@ type AgentState int
 
 const (
 	StateWandering AgentState = iota
-	StateMovingToTarget
+	StateMovingToDelivery
+	StateMovingToDestination
 	StateGrabbing
+	StateDelivering
 )
 
 type ActionType int
@@ -23,6 +25,7 @@ type ActionType int
 const (
 	ActionMove ActionType = iota
 	ActionPick
+	ActionDeliver
 )
 
 type Drone struct {
@@ -33,12 +36,14 @@ type Drone struct {
 	vision          behaviors.Vision
 	surroundingAgts []core.IAgent
 
-	syncChan  chan int
-	moveChan  chan core.MoveRequest
-	pickChan  chan core.PickRequest
-	spawnChan chan core.SpawnRequest
+	syncChan  	chan int
+	moveChan  	chan core.MoveRequest
+	pickChan  	chan core.PickRequest
+	deliverChan chan core.DeliverRequest
+	spawnChan 	chan core.SpawnRequest
 
 	pos        world.Position
+	targetPos  world.Position // What the drone is trying to go in a current state
 	targetDir  world.Position
 	currentDir world.Position
 	velocity   float64
@@ -68,10 +73,7 @@ func (d *Drone) Position() world.Position {
 }
 
 func (d *Drone) TargetPos() world.Position {
-	if d.mission != nil {
-		return d.mission.TargetDelivery.Position()
-	}
-	return world.NewPosition(0, 0)
+	return d.targetPos
 }
 
 func (d *Drone) Mission() *core.Mission {
@@ -108,24 +110,42 @@ func (d *Drone) Percept() {
 }
 
 func (d *Drone) Deliberate() {
+	// fmt.Println(d.id, d.state, d.mission)
 	switch d.state {
 	case StateWandering:
-		if time.Since(d.t) >= 5*time.Second || d.mission == nil {
+		if time.Since(d.t) >= time.Second || d.mission == nil {
 			d.generateTargetPosition()
 			d.changeTargetAngle()
 			d.t = time.Now()
 
 			if d.mission.TargetDelivery != nil {
-				d.setDroneStateAndAction(StateMovingToTarget, ActionMove)
+				d.targetPos = d.mission.TargetDelivery.Position()
+				d.setDroneStateAndAction(StateMovingToDelivery, ActionMove)
 			}
 		}
-	case StateMovingToTarget:
-		d.setDroneStateAndAction(StateMovingToTarget, ActionMove)
-		if d.mission.TargetDelivery != nil && utils.GetDistance(d.mission.TargetDelivery.Position(), d.pos) < 0.1 {
+	case StateMovingToDelivery:
+		if d.mission == nil || !d.mission.TargetDelivery.IsGrabbable() {
+			d.setDroneStateAndAction(StateWandering, ActionMove)
+		} else if d.mission.TargetDelivery != nil && utils.GetDistance(d.mission.TargetDelivery.Position(), d.pos) < 0.1 {
 			d.setDroneStateAndAction(StateGrabbing, ActionPick)
 		}
 	case StateGrabbing:
-		d.setDroneStateAndAction(StateMovingToTarget, ActionMove)
+		if d.mission.TargetDelivery.Carrier == d {
+			d.targetPos = d.mission.Destination
+			d.setDroneStateAndAction(StateMovingToDestination, ActionMove)	
+		} else {
+			d.setDroneStateAndAction(StateMovingToDelivery, ActionMove)
+		}
+	case StateMovingToDestination:
+		if utils.GetDistance(d.mission.Destination, d.pos) < 0.1 {
+			d.setDroneStateAndAction(StateDelivering, ActionDeliver)
+		}
+	case StateDelivering:
+		if d.mission == nil {
+			d.setDroneStateAndAction(StateWandering, ActionMove)
+		} else if utils.GetDistance(d.mission.Destination, d.pos) < 0.1 {
+			d.setDroneStateAndAction(StateDelivering, ActionDeliver)
+		}
 	}
 }
 
@@ -135,5 +155,7 @@ func (d *Drone) Act() {
 		d.move()
 	case ActionPick:
 		d.grab()
+	case ActionDeliver:
+		d.deliver()
 	}
 }

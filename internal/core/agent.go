@@ -21,4 +21,4 @@ type IAgent interface {
 	SurroundingAgents() []IAgent
 }
 
-type AgentFactory func(pos world.Position, moveChan chan MoveRequest, pickChan chan PickRequest, spawnChan chan SpawnRequest) IAgent
+type AgentFactory func(pos world.Position, moveChan chan MoveRequest, pickChan chan PickRequest, deliverChan chan DeliverRequest, spawnChan chan SpawnRequest) IAgent

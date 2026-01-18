@@ -55,26 +55,30 @@ func (g *Game) drawMap(screen *ebiten.Image) {
 }
 
 func (g *Game) drawObjects(screen *ebiten.Image) {
-	objs := g.Sim.Env.Objects()
+	missions := g.Sim.Env.Missions()
 
-	for _, obj := range objs {
-		pos := obj.Position()
+	for _, m := range missions {
+		pos := m.TargetDelivery.Position()
 		objX, objY := g.mapToDrawCoords(pos.X, pos.Y)
 		drawImageAt(screen, deliveryImg, objX, objY, YELLOW)
+
+		pos2 := m.Destination
+		objX2, objY2 := g.mapToDrawCoords(pos2.X, pos2.Y)
+		drawImageAt(screen, deliveryImg, objX2, objY2, RED)
 	}
 }
 
 func (g *Game) drawAgents(screen *ebiten.Image) {
     g.forEachSpawnedAgents(func(agt core.IAgent) {
-        agtX, agtY := g.mapToDrawCoords(agt.Position().X, agt.Position().Y)
-        drawImageAt(screen, droneImg, agtX, agtY, nil)
-
-        // Si le drone transporte un colis, dessine-le sur le drone
-        if drone, ok := agt.(*drone.Drone); ok && drone.Mission() != nil && drone.Mission().GrabbedDelivery != nil {
-            pos := drone.Mission().GrabbedDelivery.Position()
+		// If the drone is transporting a delivery, draw the delivery
+        if drone, ok := agt.(*drone.Drone); ok && drone.Mission() != nil && drone.Mission().TargetDelivery != nil {
+            pos := drone.Mission().TargetDelivery.Position()
             objX, objY := g.mapToDrawCoords(pos.X, pos.Y)
             drawImageAt(screen, deliveryImg, objX, objY, YELLOW)
         }
+
+        agtX, agtY := g.mapToDrawCoords(agt.Position().X, agt.Position().Y)
+        drawImageAt(screen, droneImg, agtX, agtY, nil)
     })
 }
 

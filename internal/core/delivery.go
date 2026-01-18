@@ -15,15 +15,13 @@ const (
 )
 
 type Delivery struct {
-	id 		ObjectId
 	pos 	world.Position
 	State 	DeliveryState
 	Carrier IAgent
 }
 
-func NewDelivery(id ObjectId, pos world.Position) *Delivery {
+func NewDelivery(pos world.Position) *Delivery {
 	return &Delivery{
-		id: 	id,
 		pos: 	pos,
 		State: 	FREE,
 	}
@@ -34,4 +32,8 @@ func (d *Delivery) Position() world.Position {
 		return d.Carrier.Position()
 	}
 	return d.pos
+}
+
+func (d *Delivery) IsGrabbable() bool {
+	return d.State == FREE
 }

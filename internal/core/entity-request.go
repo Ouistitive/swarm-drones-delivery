@@ -15,3 +15,9 @@ type PickRequest struct {
 	Deliv *Delivery
 	ResponseChannel chan bool
 }
+
+type DeliverRequest struct {
+	Agt IAgent
+	Deliv *Delivery
+	ResponseChannel chan bool
+}

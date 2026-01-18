@@ -9,7 +9,7 @@ import (
 	"swarm-drones-delivery/internal/world"
 )
 
-func NewDrone(env core.IEnvironment, agtId core.AgentID, pos world.Position, syncChan chan int, moveChan chan core.MoveRequest, pickChan chan core.PickRequest, spawnChan chan core.SpawnRequest) *Drone {
+func NewDrone(env core.IEnvironment, agtId core.AgentID, pos world.Position, syncChan chan int, moveChan chan core.MoveRequest, pickChan chan core.PickRequest, deliverChan chan core.DeliverRequest, spawnChan chan core.SpawnRequest) *Drone {
 	return &Drone{
 		t:               time.Now(),
 		env:             env,
@@ -19,6 +19,7 @@ func NewDrone(env core.IEnvironment, agtId core.AgentID, pos world.Position, syn
 		syncChan:        syncChan,
 		moveChan:        moveChan,
 		pickChan: 		 pickChan,
+		deliverChan: 	 deliverChan,
 		spawnChan:       spawnChan,
 		pos:             pos,
 		surroundingAgts: []core.IAgent{},
@@ -34,7 +35,7 @@ func DroneFactory(
 	agtId core.AgentID,
 	syncChan chan int,
 ) core.AgentFactory {
-	return func(pos world.Position, moveChan chan core.MoveRequest, pickChan chan core.PickRequest, spawnChan chan core.SpawnRequest) core.IAgent {
+	return func(pos world.Position, moveChan chan core.MoveRequest, pickChan chan core.PickRequest, deliverChan chan core.DeliverRequest, spawnChan chan core.SpawnRequest) core.IAgent {
 		return NewDrone(
 			env,
 			agtId,
@@ -42,6 +43,7 @@ func DroneFactory(
 			syncChan,
 			moveChan,
 			pickChan,
+			deliverChan,
 			spawnChan,
 		)
 	}
