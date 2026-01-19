@@ -37,7 +37,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 }
 
 func (g *Game) drawHUD(screen *ebiten.Image) {
-	if g.Hud.HudBg == nil {
+	if g.Hud.HudBg == nil || g.Hud.Hidden {
 		return
 	}
 

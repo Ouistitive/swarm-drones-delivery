@@ -12,7 +12,6 @@ import (
 func (h *Hud) Update() {
 	if h.selectedAgt != nil {
 		h.TargetPosition = h.selectedAgt.Position()
-		// msg := h.getAgentSelectionMessage()
 		h.prepareRender(h.selectedAgt.GetDisplayData())
 	}
 }
@@ -34,8 +33,8 @@ func (h *Hud) prepareRender(msg string) {
 			maxWidth = width
 		}
 	}
-	h.HudWidth = maxWidth + h.PaddingX*2
-	h.HudHeight = len(lines)*lineHeight + h.PaddingY*2
+	h.HudWidth = maxWidth + h.PaddingX * 2
+	h.HudHeight = len(lines) * lineHeight + h.PaddingY * 2
 	h.HudBg = ebiten.NewImage(h.HudWidth, h.HudHeight)
 	h.HudBg.Fill(color.RGBA{0, 0, 0, 180})
 }

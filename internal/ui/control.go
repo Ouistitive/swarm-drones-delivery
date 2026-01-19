@@ -13,6 +13,7 @@ import (
 func (g *Game) Control() {
 	if inpututil.IsKeyJustPressed(ebiten.KeyH) {
 		g.isDebugMode = !g.isDebugMode
+		g.Hud.Hidden = !g.Hud.Hidden
 	}
 
 	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {

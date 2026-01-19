@@ -11,13 +11,14 @@ import (
 var FONT font.Face
 
 type Hud struct {
-	TargetPosition 					 world.Position
-	PaddingX, PaddingY               int
-	HudWidth, HudHeight              int
-	HudBg                            *ebiten.Image
-	Lines                            []string
+	TargetPosition 		world.Position
+	PaddingX, PaddingY  int
+	HudWidth, HudHeight int
+	HudBg               *ebiten.Image
+	Lines               []string
+	Hidden 				bool
 	
-	selectedAgt 					 core.ClickableEntity
+	selectedAgt 		core.ClickableEntity
 }
 
 func NewHud() *Hud {
@@ -25,15 +26,6 @@ func NewHud() *Hud {
 		TargetPosition:  world.NewPosition(10, 10),
 		PaddingX:        10,
 		PaddingY:        5,
-		// hidden:          true,
-		// DisplayAgentPaths: false,
+		Hidden:          true,
 	}
 }
-
-// func (h *Hud) Hidden() bool {
-// 	return h.hidden
-// }
-
-// func (h *Hud) ToggleHidden() {
-// 	h.hidden = !h.hidden
-// }
