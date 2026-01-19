@@ -1,7 +1,6 @@
 package ui
 
 import (
-	"fmt"
 	"math"
 	"swarm-drones-delivery/internal/constants"
 	"swarm-drones-delivery/internal/core"
@@ -30,7 +29,6 @@ func (g *Game) handleMouseClick() {
 
 	agt := g.isMouseClickedOnAgent(mapX, mapY)
 	if agt != nil {
-		fmt.Println(agt.ID())
 		g.Hud.SetAgent(agt)
 	}
 }

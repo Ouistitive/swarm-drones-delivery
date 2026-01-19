@@ -10,6 +10,7 @@ import (
 	"swarm-drones-delivery/internal/world"
 )
 
+//go:generate stringer -type=AgentState
 type AgentState int
 
 const (
@@ -20,6 +21,7 @@ const (
 	StateDelivering
 )
 
+//go:generate stringer -type=ActionType
 type ActionType int
 
 const (
@@ -77,7 +79,16 @@ func (d *Drone) TargetPos() world.Position {
 }
 
 func (d *Drone) GetDisplayData() string {
-	return fmt.Sprintf("AgentID: %s\n", d.id)
+	text:= fmt.Sprintf("AgentID: %s\nState: %s\nAction: %s", d.id, d.state.String(), d.nextAction.String())
+	if d.mission != nil {
+		fmt.Println(d.id, d.pos, d.targetPos, d.mission.Destination, d.mission.TargetDelivery.Position())
+		fmt.Println(d.mission.TargetDelivery.Position(), d.pos, utils.GetDistance(d.mission.TargetDelivery.Position(), d.pos), utils.GetDistance(d.mission.TargetDelivery.Position(), d.pos) < 0.1)
+		// fmt.Println(d.mission.TargetDelivery.Carrier)
+		if d.mission.TargetDelivery.Carrier != nil {
+			fmt.Println("id", d.mission.TargetDelivery.Carrier.ID())
+		}
+	}
+	return text
 }
 
 func (d *Drone) Mission() *core.Mission {
@@ -114,7 +125,6 @@ func (d *Drone) Percept() {
 }
 
 func (d *Drone) Deliberate() {
-	fmt.Println(d.id, d.state, d.mission)
 	switch d.state {
 	case StateWandering:
 		if time.Since(d.t) >= time.Second || d.mission == nil {

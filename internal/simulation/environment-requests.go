@@ -1,6 +1,7 @@
 package simulation
 
 import (
+	"fmt"
 	"swarm-drones-delivery/internal/constants"
 	"swarm-drones-delivery/internal/core"
 	"time"
@@ -36,7 +37,8 @@ func (e *Environment) pickRequest() {
 		agt := pickRequest.Agt
 		del.State = core.GRABBED
 		del.Carrier = agt
-		agt.GrabDelivery(del)
+		fmt.Println("TRUE", pickRequest.Agt.ID())
+		// agt.GrabDelivery(del)
 
 		pickRequest.ResponseChannel <- true
 	}

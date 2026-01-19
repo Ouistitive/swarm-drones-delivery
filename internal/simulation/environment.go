@@ -30,8 +30,8 @@ func NewEnvironment(w *world.Map) *Environment {
 		world:         w,
 		objects:       make([]core.Delivery, 0),
 		moveChan:      make(chan core.MoveRequest),
-		pickchan: 	   make(chan core.PickRequest),
-		deliverChan:   make(chan core.DeliverRequest),
+		pickchan: 	   make(chan core.PickRequest, 50),
+		deliverChan:   make(chan core.DeliverRequest, 50),
 		spawnChans:    spawnChans,
 	}
 }
