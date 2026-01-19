@@ -4,13 +4,16 @@ import (
 	"image/color"
 	"swarm-drones-delivery/internal/constants"
 	"swarm-drones-delivery/internal/core"
+	"swarm-drones-delivery/internal/ui/hud"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/text"
 	"github.com/hajimehoshi/ebiten/v2/vector"
 )
 
 func (g *Game) Update() error {
 	g.Control()
+	g.Hud.Update()
 	return nil
 }
 
@@ -30,6 +33,26 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	}
 
 	g.drawAgents(screen)
+	g.drawHUD(screen)
+}
+
+func (g *Game) drawHUD(screen *ebiten.Image) {
+	if g.Hud.HudBg == nil || g.Hud.Hidden {
+		return
+	}
+
+	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Translate(float64(g.Hud.PaddingX), float64(g.Hud.PaddingY))
+	screen.DrawImage(g.Hud.HudBg, op)
+
+	y := g.Hud.PaddingX + g.Hud.PaddingY + hud.FONT.Metrics().Height.Ceil()
+	for _, line := range g.Hud.Lines {
+		text.Draw(screen, line, hud.FONT, g.Hud.PaddingY + g.Hud.PaddingX, y, color.White)
+		y += hud.FONT.Metrics().Height.Ceil()
+	}
+
+	targetX, targetY := g.mapToDrawCoords(g.Hud.TargetPosition.X, g.Hud.TargetPosition.Y)
+	drawImageAt(screen, targetImg, targetX, targetY, nil)
 }
 
 func (g *Game) drawMap(screen *ebiten.Image) {

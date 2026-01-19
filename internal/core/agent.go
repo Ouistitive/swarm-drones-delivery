@@ -5,6 +5,8 @@ import "swarm-drones-delivery/internal/world"
 type AgentID string
 
 type IAgent interface {
+	ClickableEntity
+	
 	ID() 		AgentID
 	Start()
 	Percept()

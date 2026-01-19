@@ -3,11 +3,13 @@ package ui
 import (
 	"log"
 	"swarm-drones-delivery/internal/simulation"
+	"swarm-drones-delivery/internal/ui/hud"
 	"swarm-drones-delivery/internal/world"
 )
 
 type Game struct {
 	Sim 		*simulation.Simulation
+	Hud 		hud.Hud
 	isDebugMode	bool
 }
 

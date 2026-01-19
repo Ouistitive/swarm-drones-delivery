@@ -51,6 +51,10 @@ func (d *Drone) TargetPos() world.Position {
 	return d.targetPos
 }
 
+func (d *Drone) GetDisplayData() string {
+	return fmt.Sprintf("AgentID: %s\n", d.id)
+}
+
 func (d *Drone) Start() {
 	fmt.Println("Drone started:", d.id)
 
