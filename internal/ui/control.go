@@ -26,11 +26,11 @@ func (g *Game) handleMouseClick() {
 	// convert screen to map coordinates
 	mapX := float64((mouseX) / constants.CELL_SIZE)
 	mapY := float64((mouseY) / constants.CELL_SIZE)
-	// envMap := g.Sim.Env.World()
 
 	agt := g.isMouseClickedOnAgent(mapX, mapY)
 	if agt != nil {
 		fmt.Println(agt.ID())
+		g.Hud.SetAgent(agt)
 	}
 }
 

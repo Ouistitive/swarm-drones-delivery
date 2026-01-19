@@ -13,6 +13,7 @@ import (
 
 func (g *Game) Update() error {
 	g.Control()
+	g.Hud.Update()
 	return nil
 }
 
@@ -50,8 +51,8 @@ func (g *Game) drawHUD(screen *ebiten.Image) {
 		y += hud.FONT.Metrics().Height.Ceil()
 	}
 
-	// targetX, targetY := g.mapToDrawCoords(g.Hud.TargetPositionX, g.Hud.TargetPositionY, offsetX, offsetY)
-	// drawImageAt(screen, targetImg, targetX, targetY, nil)
+	targetX, targetY := g.mapToDrawCoords(g.Hud.TargetPosition.X, g.Hud.TargetPosition.Y)
+	drawImageAt(screen, targetImg, targetX, targetY, nil)
 }
 
 func (g *Game) drawMap(screen *ebiten.Image) {

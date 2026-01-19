@@ -4,8 +4,8 @@ import (
 	"swarm-drones-delivery/internal/core"
 	"swarm-drones-delivery/internal/world"
 
-	"golang.org/x/image/font"
 	"github.com/hajimehoshi/ebiten/v2"
+	"golang.org/x/image/font"
 )
 
 var FONT font.Face
@@ -17,7 +17,7 @@ type Hud struct {
 	HudBg                            *ebiten.Image
 	Lines                            []string
 	
-	selectedAgt core.IAgent
+	selectedAgt 					 core.ClickableEntity
 }
 
 func NewHud() *Hud {

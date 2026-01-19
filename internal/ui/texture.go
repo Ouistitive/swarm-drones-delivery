@@ -15,6 +15,7 @@ var (
 	groundImg            *ebiten.Image
 	droneImg   	         *ebiten.Image
 	deliveryImg 		 *ebiten.Image
+	targetImg 			 *ebiten.Image
 )
 
 func init() {
@@ -33,6 +34,11 @@ func init() {
 	deliveryImg, _, err = ebitenutil.NewImageFromFile("assets/delivery.png")
 	if err != nil {
 		log.Printf("Warning: Could not load delivery.png: %v", err)
+	}
+
+	targetImg, _, err = ebitenutil.NewImageFromFile("assets/target.png")
+	if err != nil {
+		log.Printf("Warning: Could not load target.png: %v", err)
 	}
 
 	fontBytes, err := os.ReadFile("assets/fonts/Monaco.ttf")

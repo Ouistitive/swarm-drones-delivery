@@ -3,6 +3,7 @@ package hud
 import (
 	"image/color"
 	"strings"
+	"swarm-drones-delivery/internal/core"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/text"
@@ -12,9 +13,12 @@ func (h *Hud) Update() {
 	if h.selectedAgt != nil {
 		h.TargetPosition = h.selectedAgt.Position()
 		// msg := h.getAgentSelectionMessage()
-		msg := "coucou"
-		h.prepareRender(msg)
+		h.prepareRender(h.selectedAgt.GetDisplayData())
 	}
+}
+
+func (h *Hud) SetAgent(agt core.ClickableEntity) {
+	h.selectedAgt = agt
 }
 
 // Determine the width and height the background based on the text
