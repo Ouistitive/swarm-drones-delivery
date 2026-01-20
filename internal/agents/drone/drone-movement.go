@@ -42,7 +42,8 @@ func (d *Drone) GrabDelivery(del *core.Delivery) {
 
 func (d *Drone) generateTargetPosition() {
 	if len(d.env.Missions()) != 0 {
-		d.mission = &d.env.Missions()[rand.Intn(len(d.env.Missions()))]
+		m := &d.env.Missions()[rand.Intn(len(d.env.Missions()))]
+		d.mission = core.NewMission(m.Id, m.TargetDelivery, m.Destination)
 	}
 }
 

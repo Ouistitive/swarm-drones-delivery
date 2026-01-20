@@ -80,14 +80,6 @@ func (d *Drone) TargetPos() world.Position {
 
 func (d *Drone) GetDisplayData() string {
 	text:= fmt.Sprintf("AgentID: %s\nState: %s\nAction: %s", d.id, d.state.String(), d.nextAction.String())
-	if d.mission != nil {
-		fmt.Println(d.id, d.pos, d.targetPos, d.mission.Destination, d.mission.TargetDelivery.Position())
-		fmt.Println(d.mission.TargetDelivery.Position(), d.pos, utils.GetDistance(d.mission.TargetDelivery.Position(), d.pos), utils.GetDistance(d.mission.TargetDelivery.Position(), d.pos) < 0.1)
-		// fmt.Println(d.mission.TargetDelivery.Carrier)
-		if d.mission.TargetDelivery.Carrier != nil {
-			fmt.Println("id", d.mission.TargetDelivery.Carrier.ID())
-		}
-	}
 	return text
 }
 

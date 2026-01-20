@@ -79,7 +79,6 @@ func (g *Game) drawMap(screen *ebiten.Image) {
 
 func (g *Game) drawObjects(screen *ebiten.Image) {
 	missions := g.Sim.Env.Missions()
-
 	for _, m := range missions {
 		pos := m.TargetDelivery.Position()
 		objX, objY := g.mapToDrawCoords(pos.X, pos.Y)

@@ -5,6 +5,8 @@ import (
 	"swarm-drones-delivery/internal/constants"
 	"swarm-drones-delivery/internal/core"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 func (e *Environment) moveRequest() {
@@ -37,7 +39,6 @@ func (e *Environment) pickRequest() {
 		agt := pickRequest.Agt
 		del.State = core.GRABBED
 		del.Carrier = agt
-		fmt.Println("TRUE", pickRequest.Agt.ID())
 		// agt.GrabDelivery(del)
 
 		pickRequest.ResponseChannel <- true
@@ -64,15 +65,15 @@ func (e *Environment) deliverRequest() {
 func (e *Environment) removeMission(toRemove core.Mission) {
 	for i, m := range e.missions {
 		if m.Id == toRemove.Id {
-			m.TargetDelivery = nil
 			e.missions = append(e.missions[:i], e.missions[i+1:]...)
+			fmt.Println("delete")
 		}
 	}
 }
 
 func (e *Environment) generateMissions() {
 	for {
-		e.missions = append(e.missions, *core.NewMission(core.NewDelivery(e.world.RandomPosition()), e.world.RandomPosition()))
+		e.missions = append(e.missions, *core.NewMission(uuid.New(), core.NewDelivery(e.world.RandomPosition()), e.world.RandomPosition()))
 		time.Sleep(time.Second)
 	}
 }

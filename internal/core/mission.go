@@ -2,6 +2,7 @@ package core
 
 import (
 	"swarm-drones-delivery/internal/world"
+
 	"github.com/google/uuid"
 )
 
@@ -11,9 +12,9 @@ type Mission struct {
     Destination     world.Position
 }
 
-func NewMission(targetDel *Delivery, dest world.Position) *Mission {
+func NewMission(uuid uuid.UUID, targetDel *Delivery, dest world.Position) *Mission {
 	return &Mission{
-		Id: 			uuid.New(),
+		Id: 			uuid,
 		TargetDelivery: targetDel,
 		Destination: 	dest,
 	}
