@@ -1,5 +1,9 @@
 package core
 
+type MissionsRequest struct {
+	ResponseChannel chan []Mission
+}
+
 type MoveRequest struct {
 	Agt IAgent
 	ResponseChannel chan bool	

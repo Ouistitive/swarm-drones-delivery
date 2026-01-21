@@ -8,6 +8,14 @@ import (
 	"github.com/google/uuid"
 )
 
+func (e *Environment) missionsRequest() {
+	for missionRequest := range e.missionsChan {
+		cp := make([]core.Mission, len(e.missions))
+		copy(cp, e.missions)
+		missionRequest.ResponseChannel <- cp
+	}
+}
+
 func (e *Environment) moveRequest() {
 	for moveRequest := range e.moveChan {
 		agt := moveRequest.Agt

@@ -38,11 +38,12 @@ type Drone struct {
 	vision          behaviors.Vision
 	surroundingAgts []core.IAgent
 
-	syncChan  	chan int
-	moveChan  	chan core.MoveRequest
-	pickChan  	chan core.PickRequest
-	deliverChan chan core.DeliverRequest
-	spawnChan 	chan core.SpawnRequest
+	syncChan  		chan int
+	missionsChan 	chan core.MissionsRequest
+	moveChan  		chan core.MoveRequest
+	pickChan  		chan core.PickRequest
+	deliverChan 	chan core.DeliverRequest
+	spawnChan 		chan core.SpawnRequest
 
 	pos        world.Position
 	targetPos  world.Position // What the drone is trying to go in a current state
