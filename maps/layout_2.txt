@@ -1,48 +1,48 @@
 BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
 B                                                                                                      B
 B                                                                                                      B
-B            WWW                       WWW                       WWW                                   B
-B            WWW                       WWW                       WWW                                   B
-B            WWW                       WWW                       WWW                                   B
-B            WWW                       WWW                       WWW                                   B
+B            RRR                       RRR      RRR              RRR           RRRRDRRRR               B
+B            RRR                       RRR      RRD              RRD           RRRRRRRRR               B
+B            RRR                       RRR      RRR              RRR           RRRRRRRRR               B
+B            DRR                       RDR                       RRR                                   B
+B            RRR                                                                                       B
+B            RRR                                                                                       B
+B                                                                                                      B
+B                                                                   RRRRRRRR                           B
+B                                                                   RRRRRRRR                           B
+B                                                                   RRRRRRRR                           B
+B                                                                   RRRDRRRR                           B
+B                                                                                                      B
+B             RRRRRRRRR                   RRRRRR                                       RRRR            B
+B             RRDRRRRRR                   RRRRRR                                       RRRR            B
+B                                         RRRRRR                                       RRRD            B
+B                                                                                      RRRR            B
+B                                                                                      RRRR            B
 B                                                                                                      B
 B                                                                                                      B
 B                                                                                                      B
+B       RRRDRRRR                      WWWRRRWWW                        RRRRRRRR                        B
+B       RRRRRRRR                      WWWRRRWWW                        RRRRDRRR                        B
+B       RRRRRRRR                      WWWRSRWWW                                                        B
+B                                     WWWRRRWWW                                                        B
+B                                     WWWRRRWWW                                                        B
+B                                                                                       RRRR           B
+B                                                                                       RRRR           B
+B                                                                                       RRRD           B
+B                                                                                       RRRR           B
+B                                                                                       RRRR           B
 B                                                                                                      B
-B                                                                                                      B
-B                                                                                                      B
-B                                                                                                      B
-B                                                                                                      B
-B                                         WW                     WW                                    B
-B                                         WW                     WW                                    B
-B                                         WW                     WW                                    B
-B                                                                                                      B
-B                                                                                                      B
-B                                                                                                      B
-B                                                                                                      B
-B                                                                                                      B
-B                                                                                                      B
-B                                                                                                      B
-B                                           S                                                          B
-B                                                                                                      B
-B                                                                                                      B
-B                                                                                                      B
-B                                                                                                      B
-B                                                                                                      B
-B                                                                                                      B
-B                                                                                                      B
-B                                                                                                      B
-B                                                                                                      B
-B                                                                                                      B
-B                                                                                                      B
-B                                                                                                      B
-B                                                                                                      B
-B                                                                               S                      B
-B                                                                                                      B
-B                                                                                                      B
-B                                                                                                      B
-B                                                                                                      B
-B                                                                                                      B
-B                                                                                                      B
+B           RRRR                                                                                       B
+B           RRRR                            RRRR                                                       B
+B           DRRR                            RRRR                             WWWWWWW                   B
+B           RRRR                            RRRR                             WWWWWWW                   B
+B           RRRR                            RRRD                             RRRRRRR                   B
+B                                           RRRR                             RRRSRRR                   B
+B                                                                            RRRRRRR                   B
+B                                                                            WWWWWWW                   B
+B                                                                            WWWWWWW                   B
+B                 RRRRRRRRRRRR                                                                         B
+B                 RRRRRRRRRRRR                                                                         B
+B                 RRDRRRRRRRRR                                                                         B
 B                                                                                                      B
 BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB

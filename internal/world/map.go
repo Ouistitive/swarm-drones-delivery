@@ -5,20 +5,23 @@ import (
 	"math/rand"
 )
 
-
 type Map struct {
 	Width, Height int
 	Cells         [][]rune
-	Walls         []Position
+	Rooftops      []Position
 	Spawners      []Position
+	DeliveryDest  []Position
+	Warehouses 	  []Position
 }
 
 func NewMap(width, height int) *Map {
 	m := &Map{
-		Width:    width,
-		Height:   height,
-		Walls:    make([]Position, 0),
-		Spawners: make([]Position, 0),
+		Width:        width,
+		Height:       height,
+		Rooftops:     make([]Position, 0),
+		Spawners:     make([]Position, 0),
+		DeliveryDest: make([]Position, 0),
+		Warehouses:   make([]Position, 0),
 	}
 
 	m.Cells = make([][]rune, height)
@@ -38,5 +41,15 @@ func (m *Map) RandomPosition() Position {
 
 func (m *Map) RandomSpawner() (Position, int) {
 	n := rand.Intn(len(m.Spawners))
-    return m.Spawners[n], n
+	return m.Spawners[n], n
+}
+
+func (m *Map) RandomDeliveryDestination() Position {
+	n := rand.Intn(len(m.DeliveryDest))
+	return m.DeliveryDest[n]
+}
+
+func (m *Map) RandomWarehouses() Position {
+	n := rand.Intn(len(m.Warehouses))
+	return m.Warehouses[n]
 }

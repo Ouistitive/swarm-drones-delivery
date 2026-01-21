@@ -48,7 +48,7 @@ func (g *Game) drawHUD(screen *ebiten.Image) {
 
 	y := g.Hud.PaddingX + g.Hud.PaddingY + hud.FONT.Metrics().Height.Ceil()
 	for _, line := range g.Hud.Lines {
-		text.Draw(screen, line, hud.FONT, g.Hud.PaddingY + g.Hud.PaddingX, y, color.White)
+		text.Draw(screen, line, hud.FONT, g.Hud.PaddingY+g.Hud.PaddingX, y, color.White)
 		y += hud.FONT.Metrics().Height.Ceil()
 	}
 
@@ -66,42 +66,37 @@ func (g *Game) drawMap(screen *ebiten.Image) {
 		}
 	}
 
-	for _, pos := range envMap.Walls {
-		drawX, drawY := g.mapToDrawCoords(pos.X, pos.Y)
-		drawImageAt(screen, groundImg, drawX, drawY, BLACK)
-	}
-
-	for _, pos := range envMap.Spawners {
-		drawX, drawY := g.mapToDrawCoords(pos.X, pos.Y)
-		drawImageAt(screen, groundImg, drawX, drawY, RED)
-	}
+	g.drawBlock(screen, envMap.Rooftops, BLACK)
+	g.drawBlock(screen, envMap.Spawners, RED)
+	g.drawBlock(screen, envMap.DeliveryDest, MAGENTA)
+	g.drawBlock(screen, envMap.Warehouses, BLUE)
 }
 
 func (g *Game) drawObjects(screen *ebiten.Image) {
 	missions := g.Sim.Env.Missions()
 	for _, m := range missions {
-		pos := m.TargetDelivery.Position()
-		objX, objY := g.mapToDrawCoords(pos.X, pos.Y)
-		drawImageAt(screen, deliveryImg, objX, objY, YELLOW)
+		currentPos := m.TargetDelivery.Position()
+		cObjX, cObjY := g.mapToDrawCoords(currentPos.X, currentPos.Y)
+		drawImageAt(screen, deliveryImg, cObjX, cObjY, MAGENTA)
 
-		pos2 := m.Destination
-		objX2, objY2 := g.mapToDrawCoords(pos2.X, pos2.Y)
-		drawImageAt(screen, deliveryImg, objX2, objY2, RED)
+		targetPos := m.Destination
+		tObjX, tObjY := g.mapToDrawCoords(targetPos.X, targetPos.Y)
+		drawImageAt(screen, deliveryImg, tObjX, tObjY, RED)
 	}
 }
 
 func (g *Game) drawAgents(screen *ebiten.Image) {
-    g.forEachSpawnedAgents(func(agt core.IAgent) {
+	g.forEachSpawnedAgents(func(agt core.IAgent) {
 		// If the drone is transporting a delivery, draw the delivery
-        if drone, ok := agt.(*drone.Drone); ok && drone.Mission() != nil && drone.Mission().TargetDelivery != nil {
-            pos := drone.Mission().TargetDelivery.Position()
-            objX, objY := g.mapToDrawCoords(pos.X, pos.Y)
-            drawImageAt(screen, deliveryImg, objX, objY, YELLOW)
-        }
+		if drone, ok := agt.(*drone.Drone); ok && drone.Mission() != nil && drone.Mission().TargetDelivery != nil {
+			pos := drone.Mission().TargetDelivery.Position()
+			objX, objY := g.mapToDrawCoords(pos.X, pos.Y)
+			drawImageAt(screen, deliveryImg, objX, objY, MAGENTA)
+		}
 
-        agtX, agtY := g.mapToDrawCoords(agt.Position().X, agt.Position().Y)
-        drawImageAt(screen, droneImg, agtX, agtY, nil)
-    })
+		agtX, agtY := g.mapToDrawCoords(agt.Position().X, agt.Position().Y)
+		drawImageAt(screen, droneImg, agtX, agtY, nil)
+	})
 }
 
 func (g *Game) drawLinesBetweenAgents(screen *ebiten.Image) {
@@ -120,34 +115,4 @@ func (g *Game) drawLinesBetweenAgentAndTarget(screen *ebiten.Image) {
 		tX, tY := g.mapToDrawCoordsCentered(agt.TargetPos().X, agt.TargetPos().Y)
 		vector.StrokeLine(screen, float32(drawX), float32(drawY), float32(tX), float32(tY), 1, color.RGBA{255, 0, 0, 255}, false)
 	})
-}
-
-func (g *Game) mapToDrawCoords(mapX float64, mapY float64) (float64, float64) {
-	return mapX * float64(constants.CELL_SIZE), mapY * float64(constants.CELL_SIZE)
-}
-
-func (g *Game) mapToDrawCoordsCentered(mapX float64, mapY float64) (float64, float64) {
-	return mapX * float64(constants.CELL_SIZE) + constants.HALF_CELL_SIZE, mapY * float64(constants.CELL_SIZE) + constants.HALF_CELL_SIZE
-}
-
-func drawImageAt(screen *ebiten.Image, img *ebiten.Image, x, y float64, colorScale *ebiten.ColorScale) {
-	if img == nil {
-		return
-	}
-	options := &ebiten.DrawImageOptions{}
-	if colorScale != nil {
-		options.ColorScale = *colorScale
-	}
-
-	options.GeoM.Scale(float64(constants.CELL_SIZE)/float64(img.Bounds().Dx()), float64(constants.CELL_SIZE)/float64(img.Bounds().Dy()))
-	options.GeoM.Translate(x, y)
-	screen.DrawImage(img, options)
-}
-
-func (g *Game) forEachSpawnedAgents(f func(agt core.IAgent)) {
-	agts := g.Sim.Env.SpawnedAgents()
-
-	for _, agt := range agts {
-		f(agt)
-	}
 }
