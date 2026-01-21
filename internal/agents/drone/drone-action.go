@@ -15,7 +15,7 @@ func (d *Drone) getMissions() {
 	d.missionsChan <- core.MissionsRequest{ResponseChannel: missionsChanResponse}
 	m := <- missionsChanResponse
 	if len(m) == 0 {
-		d.mission = &m[0]
+		d.mission = nil
 	} else {
 		d.mission = &m[rand.Intn(len(m))]
 	}
