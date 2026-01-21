@@ -9,7 +9,7 @@ import (
 	"swarm-drones-delivery/internal/world"
 )
 
-func NewDrone(env core.IEnvironment, agtId core.AgentID, pos world.Position, syncChan chan int, moveChan chan core.MoveRequest, pickChan chan core.PickRequest, deliverChan chan core.DeliverRequest, spawnChan chan core.SpawnRequest) *Drone {
+func NewDrone(env core.IEnvironment, agtId core.AgentID, pos world.Position, syncChan chan int, missionsChan chan core.MissionsRequest, moveChan chan core.MoveRequest, pickChan chan core.PickRequest, deliverChan chan core.DeliverRequest, spawnChan chan core.SpawnRequest) *Drone {
 	return &Drone{
 		t:               time.Now(),
 		env:             env,
@@ -17,6 +17,7 @@ func NewDrone(env core.IEnvironment, agtId core.AgentID, pos world.Position, syn
 		hasSpawned:      false,
 		vision:          behaviors.NewVision(constants.VISION_RANGE),
 		syncChan:        syncChan,
+		missionsChan: 	 missionsChan,
 		moveChan:        moveChan,
 		pickChan: 		 pickChan,
 		deliverChan: 	 deliverChan,
@@ -35,12 +36,13 @@ func DroneFactory(
 	agtId core.AgentID,
 	syncChan chan int,
 ) core.AgentFactory {
-	return func(pos world.Position, moveChan chan core.MoveRequest, pickChan chan core.PickRequest, deliverChan chan core.DeliverRequest, spawnChan chan core.SpawnRequest) core.IAgent {
+	return func(pos world.Position, missionsChan chan core.MissionsRequest, moveChan chan core.MoveRequest, pickChan chan core.PickRequest, deliverChan chan core.DeliverRequest, spawnChan chan core.SpawnRequest) core.IAgent {
 		return NewDrone(
 			env,
 			agtId,
 			pos,
 			syncChan,
+			missionsChan,
 			moveChan,
 			pickChan,
 			deliverChan,

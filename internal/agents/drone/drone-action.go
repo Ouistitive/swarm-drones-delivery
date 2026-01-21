@@ -1,12 +1,24 @@
 package drone
 
 import (
+	"math/rand"
 	"swarm-drones-delivery/internal/core"
 )
 
 func (d *Drone) setDroneStateAndAction(state AgentState, act ActionType) {
 	d.state = state
 	d.nextAction = act
+}
+
+func (d *Drone) getMissions() {
+	missionsChanResponse := make(chan []core.Mission)
+	d.missionsChan <- core.MissionsRequest{ResponseChannel: missionsChanResponse}
+	m := <- missionsChanResponse
+	if len(m) == 0 {
+		d.mission = &m[0]
+	} else {
+		d.mission = &m[rand.Intn(len(m))]
+	}
 }
 
 func (d *Drone) move() {
