@@ -21,7 +21,7 @@ B                                                                               
 B                                                                                                      B
 B                                                                                                      B
 B                                                                                                      B
-B       RRRRRRRR                      WWWRRRWWW                        RRRRRRRR                        B
+B       RRRDRRRR                      WWWRRRWWW                        RRRRRRRR                        B
 B       RRRRRRRR                      WWWRRRWWW                        RRRRDRRR                        B
 B       RRRRRRRR                      WWWRSRWWW                                                        B
 B                                     WWWRRRWWW                                                        B
