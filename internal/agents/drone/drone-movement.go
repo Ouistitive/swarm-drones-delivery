@@ -4,6 +4,7 @@ import (
 	"math"
 	"math/rand"
 	"swarm-drones-delivery/internal/constants"
+	"swarm-drones-delivery/internal/core"
 	"swarm-drones-delivery/internal/world"
 )
 
@@ -35,9 +36,11 @@ func (d *Drone) Move() {
 	d.pos.Y += d.currentDir.Y * d.velocity
 }
 
-
 func (d *Drone) generateTargetPosition() {
-	d.targetPos = d.env.Objects()[rand.Intn(len(d.env.Objects()))].Position()
+	if len(d.env.Missions()) != 0 {
+		m := &d.env.Missions()[rand.Intn(len(d.env.Missions()))]
+		d.mission = core.NewMission(m.Id, m.TargetDelivery, m.Destination)
+	}
 }
 
 func (d *Drone) adjustVelocity(distance float64) {

@@ -16,9 +16,10 @@ type IAgent interface {
 	Spawned() 	bool
 	Position() 	world.Position
 	Move()
+	Mission() 	*Mission
 	TargetPos() world.Position
 
 	SurroundingAgents() []IAgent
 }
 
-type AgentFactory func(pos world.Position, moveChan chan MoveRequest, spawnChan chan SpawnRequest) IAgent
+type AgentFactory func(pos world.Position, moveChan chan MoveRequest, pickChan chan PickRequest, deliverChan chan DeliverRequest, spawnChan chan SpawnRequest) IAgent

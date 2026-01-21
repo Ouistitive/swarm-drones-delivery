@@ -2,6 +2,7 @@ package ui
 
 import (
 	"image/color"
+	"swarm-drones-delivery/internal/agents/drone"
 	"swarm-drones-delivery/internal/constants"
 	"swarm-drones-delivery/internal/core"
 	"swarm-drones-delivery/internal/ui/hud"
@@ -77,21 +78,30 @@ func (g *Game) drawMap(screen *ebiten.Image) {
 }
 
 func (g *Game) drawObjects(screen *ebiten.Image) {
-	objs := g.Sim.Env.Objects()
-
-	for _, obj := range objs {
-		objX, objY := g.mapToDrawCoords(obj.Position().X, obj.Position().Y)
+	missions := g.Sim.Env.Missions()
+	for _, m := range missions {
+		pos := m.TargetDelivery.Position()
+		objX, objY := g.mapToDrawCoords(pos.X, pos.Y)
 		drawImageAt(screen, deliveryImg, objX, objY, YELLOW)
+
+		pos2 := m.Destination
+		objX2, objY2 := g.mapToDrawCoords(pos2.X, pos2.Y)
+		drawImageAt(screen, deliveryImg, objX2, objY2, RED)
 	}
 }
 
 func (g *Game) drawAgents(screen *ebiten.Image) {
-	g.forEachSpawnedAgents(func(agt core.IAgent) {
-		targX, targY := g.mapToDrawCoords(agt.TargetPos().X, agt.TargetPos().Y)
-		drawImageAt(screen, droneImg, targX, targY, RED)
-		agtX, agtY := g.mapToDrawCoords(agt.Position().X, agt.Position().Y)
-		drawImageAt(screen, droneImg, agtX, agtY, nil)
-	})
+    g.forEachSpawnedAgents(func(agt core.IAgent) {
+		// If the drone is transporting a delivery, draw the delivery
+        if drone, ok := agt.(*drone.Drone); ok && drone.Mission() != nil && drone.Mission().TargetDelivery != nil {
+            pos := drone.Mission().TargetDelivery.Position()
+            objX, objY := g.mapToDrawCoords(pos.X, pos.Y)
+            drawImageAt(screen, deliveryImg, objX, objY, YELLOW)
+        }
+
+        agtX, agtY := g.mapToDrawCoords(agt.Position().X, agt.Position().Y)
+        drawImageAt(screen, droneImg, agtX, agtY, nil)
+    })
 }
 
 func (g *Game) drawLinesBetweenAgents(screen *ebiten.Image) {
