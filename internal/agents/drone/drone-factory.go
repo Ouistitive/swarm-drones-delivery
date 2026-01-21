@@ -28,6 +28,7 @@ func NewDrone(env core.IEnvironment, agtId core.AgentID, pos world.Position, syn
 		currentDir:      world.NullPosition(),
 		velocity:        0.0,
 		state:           StateWandering,
+		battery: 		 behaviors.NewBattery(),
 	}
 }
 

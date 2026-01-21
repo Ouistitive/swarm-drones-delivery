@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"swarm-drones-delivery/internal/agents/behaviors"
+	"swarm-drones-delivery/internal/constants"
 	"swarm-drones-delivery/internal/core"
 	"swarm-drones-delivery/internal/utils"
 	"swarm-drones-delivery/internal/world"
@@ -19,6 +20,7 @@ const (
 	StateMovingToDestination
 	StateGrabbing
 	StateDelivering
+	StateRecharging
 )
 
 //go:generate stringer -type=ActionType
@@ -55,6 +57,7 @@ type Drone struct {
 	nextAction ActionType
 
 	mission *core.Mission
+	battery behaviors.Battery
 
 	t time.Time
 }
@@ -80,7 +83,7 @@ func (d *Drone) TargetPos() world.Position {
 }
 
 func (d *Drone) GetDisplayData() string {
-	text:= fmt.Sprintf("AgentID: %s\nState: %s\nAction: %s", d.id, d.state.String(), d.nextAction.String())
+	text:= fmt.Sprintf("AgentID: %s\nState: %s\nAction: %s\nBattery: %d", d.id, d.state.String(), d.nextAction.String(), int(d.battery.Ratio() * 100))
 	return text
 }
 
@@ -159,10 +162,16 @@ func (d *Drone) Deliberate() {
 func (d *Drone) Act() {
 	switch d.nextAction {
 	case ActionMove:
-		d.move()
+		if d.battery.Consume(constants.BATTERY_DISCHARGING_MOVE) {
+			d.move()
+		}
 	case ActionPick:
-		d.grab()
+		if d.battery.Consume(constants.BATTERY_DISCHARGING_PICK) {
+			d.grab()
+		}
 	case ActionDeliver:
-		d.deliver()
+		if d.battery.Consume(constants.BATTERY_DISCHARGING_DELIVER) {
+			d.deliver()
+		}
 	}
 }
