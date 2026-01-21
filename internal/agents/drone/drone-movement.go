@@ -36,10 +36,6 @@ func (d *Drone) Move() {
 	d.pos.Y += d.currentDir.Y * d.velocity
 }
 
-func (d *Drone) GrabDelivery(del *core.Delivery) {
-	d.mission.TargetDelivery = del
-}
-
 func (d *Drone) generateTargetPosition() {
 	if len(d.env.Missions()) != 0 {
 		m := &d.env.Missions()[rand.Intn(len(d.env.Missions()))]

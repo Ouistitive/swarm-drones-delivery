@@ -17,7 +17,6 @@ type IAgent interface {
 	Position() 	world.Position
 	Move()
 	Mission() 	*Mission
-	GrabDelivery(del *Delivery)
 	TargetPos() world.Position
 
 	SurroundingAgents() []IAgent

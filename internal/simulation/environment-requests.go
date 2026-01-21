@@ -1,7 +1,6 @@
 package simulation
 
 import (
-	"fmt"
 	"swarm-drones-delivery/internal/constants"
 	"swarm-drones-delivery/internal/core"
 	"time"
@@ -39,7 +38,6 @@ func (e *Environment) pickRequest() {
 		agt := pickRequest.Agt
 		del.State = core.GRABBED
 		del.Carrier = agt
-		// agt.GrabDelivery(del)
 
 		pickRequest.ResponseChannel <- true
 	}
@@ -66,7 +64,6 @@ func (e *Environment) removeMission(toRemove core.Mission) {
 	for i, m := range e.missions {
 		if m.Id == toRemove.Id {
 			e.missions = append(e.missions[:i], e.missions[i+1:]...)
-			fmt.Println("delete")
 		}
 	}
 }
