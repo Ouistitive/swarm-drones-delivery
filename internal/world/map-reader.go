@@ -17,8 +17,10 @@ func ReadMap(mapPath string) (*Map, error) {
 func loadMap(content string) *Map {
 	lines := strings.Split(content, "\n")
 	cells := make([][]rune, 0)
-	walls := make([]Position, 0)
+	rooftops := make([]Position, 0)
 	spawners := make([]Position, 0)
+	deliveryDestinations := make([]Position, 0)
+	warehouses := make([]Position, 0)
 
 	y := 0.0
 	for _, line := range lines {
@@ -26,15 +28,19 @@ func loadMap(content string) *Map {
 		cells = append(cells, row)
 		for x, r := range line {
 			switch r {
-			case 'W':
-				walls = append(walls, NewPosition(float64(x), y))
+			case 'R':
+				rooftops = append(rooftops, NewPosition(float64(x), y))
 			case 'S':
 				spawners = append(spawners, NewPosition(float64(x), y))
+			case 'D':
+				deliveryDestinations = append(deliveryDestinations, NewPosition(float64(x), y))
+			case 'W':
+				warehouses = append(warehouses, NewPosition(float64(x), y))
 			}
 		}
 
 		y++
 	}
 
-	return &Map{Width: len(lines[0]), Height: len(lines), Cells: cells, Walls: walls, Spawners: spawners}
+	return &Map{Width: len(lines[0]), Height: len(lines), Cells: cells, Rooftops: rooftops, Spawners: spawners, DeliveryDest: deliveryDestinations, Warehouses: warehouses}
 }

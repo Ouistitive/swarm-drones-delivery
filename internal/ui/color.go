@@ -3,11 +3,12 @@ package ui
 import "github.com/hajimehoshi/ebiten/v2"
 
 var (
-	BLACK 	*ebiten.ColorScale
-	WHITE 	*ebiten.ColorScale
+	BLACK *ebiten.ColorScale
+	WHITE *ebiten.ColorScale
 
-	RED 	*ebiten.ColorScale
-	YELLOW	*ebiten.ColorScale
+	RED     *ebiten.ColorScale
+	MAGENTA *ebiten.ColorScale
+	BLUE	*ebiten.ColorScale
 )
 
 func init() {
@@ -26,8 +27,13 @@ func init() {
 	RED.SetG(0)
 	RED.SetB(0)
 
-	YELLOW = &ebiten.ColorScale{}
-	YELLOW.SetR(255)
-	YELLOW.SetG(0)
-	YELLOW.SetB(255)
+	MAGENTA = &ebiten.ColorScale{}
+	MAGENTA.SetR(255)
+	MAGENTA.SetG(0)
+	MAGENTA.SetB(255)
+	
+	BLUE = &ebiten.ColorScale{}
+	BLUE.SetR(0)
+	BLUE.SetG(0)
+	BLUE.SetB(255)
 }
