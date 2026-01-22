@@ -6,7 +6,7 @@ B      DRR    RRR  B
 B      RRR    RRR  B
 B      RRR    RRR  B
 B                  B
-B       WRRRW      B
+B       WCRRW      B
 B       WRSRW      B
 B       WRRRW      B
 B                  B

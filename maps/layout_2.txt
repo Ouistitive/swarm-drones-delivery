@@ -21,7 +21,7 @@ B                                                                               
 B                                                                                                      B
 B                                                                                                      B
 B                                                                                                      B
-B       RRRDRRRR                      WWWRRRWWW                        RRRRRRRR                        B
+B       RRRDRRRR                      WWWRCRWWW                        RRRRRRRR                        B
 B       RRRRRRRR                      WWWRRRWWW                        RRRRDRRR                        B
 B       RRRRRRRR                      WWWRSRWWW                                                        B
 B                                     WWWRRRWWW                                                        B
@@ -37,7 +37,7 @@ B           RRRR                            RRRR                                
 B           DRRR                            RRRR                             WWWWWWW                   B
 B           RRRR                            RRRR                             WWWWWWW                   B
 B           RRRR                            RRRD                             RRRRRRR                   B
-B                                           RRRR                             RRRSRRR                   B
+B                                           RRRR                             CRRSRRR                   B
 B                                                                            RRRRRRR                   B
 B                                                                            WWWWWWW                   B
 B                                                                            WWWWWWW                   B
