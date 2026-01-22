@@ -9,6 +9,8 @@ import (
 	"swarm-drones-delivery/internal/core"
 	"swarm-drones-delivery/internal/utils"
 	"swarm-drones-delivery/internal/world"
+
+	"github.com/google/uuid"
 )
 
 //go:generate stringer -type=AgentState
@@ -17,7 +19,9 @@ type AgentState int
 const (
 	StateWandering AgentState = iota
 	StateMovingToDelivery
+	StateMovingToRecharge
 	StateMovingToDestination
+
 	StateGrabbing
 	StateDelivering
 	StateRecharging
@@ -30,6 +34,7 @@ const (
 	ActionMove ActionType = iota
 	ActionPick
 	ActionDeliver
+	ActionRecharge
 )
 
 type Drone struct {
@@ -128,7 +133,11 @@ func (d *Drone) Deliberate() {
 			d.changeTargetAngle()
 			d.t = time.Now()
 
-			if d.mission != nil && d.mission.TargetDelivery != nil {
+			if d.battery.Ratio() < 0.5 && d.state != StateRecharging {
+				d.mission = core.NewRechargeMission(uuid.New(), d.env.World().ChargingPoints[0])
+				d.targetPos = d.env.World().ChargingPoints[0]
+				d.setDroneStateAndAction(StateMovingToRecharge, ActionMove)
+			} else if d.mission != nil && d.mission.TargetDelivery != nil {
 				d.targetPos = d.mission.TargetDelivery.Position()
 				d.setDroneStateAndAction(StateMovingToDelivery, ActionMove)
 			}
@@ -138,6 +147,10 @@ func (d *Drone) Deliberate() {
 			d.setDroneStateAndAction(StateWandering, ActionMove)
 		} else if d.mission.TargetDelivery != nil && utils.GetDistance(d.mission.TargetDelivery.Position(), d.pos) < 0.1 {
 			d.setDroneStateAndAction(StateGrabbing, ActionPick)
+		}
+	case StateMovingToRecharge:
+		if utils.GetDistance(d.targetPos, d.pos) < 0.1 {
+			d.setDroneStateAndAction(StateRecharging, ActionRecharge)
 		}
 	case StateGrabbing:
 		if d.mission.TargetDelivery.Carrier == d {
@@ -172,6 +185,12 @@ func (d *Drone) Act() {
 	case ActionDeliver:
 		if d.battery.Consume(constants.BATTERY_DISCHARGING_DELIVER) {
 			d.deliver()
+		}
+	case ActionRecharge:
+		d.battery.Recharge(constants.BATTERY_CHARGING_RATE)
+		if d.battery.IsFull() {
+			d.mission = nil
+			d.setDroneStateAndAction(StateWandering, ActionMove)
 		}
 	}
 }

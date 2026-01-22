@@ -21,6 +21,12 @@ func (d *Drone) getMissions() {
 	}
 }
 
+func (d *Drone) getNearestChargingPoint() {
+	// missionsChanResponse := make(chan []core.Mission)
+	// d.missionsChan <- core.MissionsRequest{ResponseChannel: missionsChanResponse}
+	// m := <- missionsChanResponse
+}
+
 func (d *Drone) move() {
 	moveChanResponse := make(chan bool)
 	d.moveChan <- core.MoveRequest{Agt: d, ResponseChannel: moveChanResponse}

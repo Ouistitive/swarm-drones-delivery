@@ -23,8 +23,19 @@ func (b *Battery) Consume(amount float64) bool {
     return true
 }
 
+func (b *Battery) Recharge(amount float64) {
+    b.Level += amount
+    if b.Level > b.Total {
+        b.Level = b.Total
+    }
+}
+
 func (b *Battery) IsEmpty() bool {
     return b.Level <= 0
+}
+
+func (b *Battery) IsFull() bool {
+    return b.Level >= b.Total
 }
 
 func (b *Battery) Ratio() float64 {

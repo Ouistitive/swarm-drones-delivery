@@ -78,7 +78,7 @@ func (e *Environment) removeMission(toRemove core.Mission) {
 
 func (e *Environment) generateMissions() {
 	for {
-		e.missions = append(e.missions, *core.NewMission(uuid.New(), core.NewDelivery(e.world.RandomWarehouses()), e.world.RandomDeliveryDestination()))
+		e.missions = append(e.missions, *core.NewDeliveryMission(uuid.New(), core.NewDelivery(e.world.RandomWarehouses()), e.world.RandomDeliveryDestination()))
 		time.Sleep(time.Second)
 	}
 }

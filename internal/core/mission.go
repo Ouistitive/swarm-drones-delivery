@@ -6,16 +6,35 @@ import (
 	"github.com/google/uuid"
 )
 
+type MissionType int
+
+const (
+	MissionDelivery MissionType = iota
+	MissionRecharge
+)
+
 type Mission struct {
-	Id 				uuid.UUID
-    TargetDelivery  *Delivery
-    Destination     world.Position
+	Id   uuid.UUID
+	Type MissionType
+
+	TargetDelivery *Delivery
+	Destination    world.Position
 }
 
-func NewMission(uuid uuid.UUID, targetDel *Delivery, dest world.Position) *Mission {
+func NewDeliveryMission(uuid uuid.UUID, targetDel *Delivery, dest world.Position) *Mission {
 	return &Mission{
-		Id: 			uuid,
+		Id:             uuid,
+		Type:           MissionDelivery,
 		TargetDelivery: targetDel,
-		Destination: 	dest,
+		Destination:    dest,
+	}
+}
+
+func NewRechargeMission(uuid uuid.UUID, dest world.Position) *Mission {
+	return &Mission{
+		Id:             uuid,
+		Type:           MissionRecharge,
+		Destination:    dest,
+		TargetDelivery: nil,
 	}
 }
