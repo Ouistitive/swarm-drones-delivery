@@ -10,14 +10,16 @@ func _() {
 	var x [1]struct{}
 	_ = x[StateWandering-0]
 	_ = x[StateMovingToDelivery-1]
-	_ = x[StateMovingToDestination-2]
-	_ = x[StateGrabbing-3]
-	_ = x[StateDelivering-4]
+	_ = x[StateMovingToRecharge-2]
+	_ = x[StateMovingToDestination-3]
+	_ = x[StateGrabbing-4]
+	_ = x[StateDelivering-5]
+	_ = x[StateRecharging-6]
 }
 
-const _AgentState_name = "StateWanderingStateMovingToDeliveryStateMovingToDestinationStateGrabbingStateDelivering"
+const _AgentState_name = "StateWanderingStateMovingToDeliveryStateMovingToRechargeStateMovingToDestinationStateGrabbingStateDeliveringStateRecharging"
 
-var _AgentState_index = [...]uint8{0, 14, 35, 59, 72, 87}
+var _AgentState_index = [...]uint8{0, 14, 35, 56, 80, 93, 108, 123}
 
 func (i AgentState) String() string {
 	idx := int(i) - 0

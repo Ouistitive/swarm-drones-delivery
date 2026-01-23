@@ -70,6 +70,11 @@ func (g *Game) drawMap(screen *ebiten.Image) {
 	g.drawBlock(screen, envMap.Spawners, RED)
 	g.drawBlock(screen, envMap.DeliveryDest, MAGENTA)
 	g.drawBlock(screen, envMap.Warehouses, BLUE)
+
+	for _, chargingPtn := range envMap.ChargingPoints {
+		drawX, drawY := g.mapToDrawCoords(chargingPtn.Pos.X, chargingPtn.Pos.Y)
+		drawImageAt(screen, groundImg, drawX, drawY, YELLOW)
+	}
 }
 
 func (g *Game) drawObjects(screen *ebiten.Image) {

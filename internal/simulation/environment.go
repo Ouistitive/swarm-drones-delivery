@@ -10,13 +10,15 @@ type Environment struct {
 	spawnedAgents []core.IAgent
 	world         *world.Map
 	objects       []core.Delivery
-	missions 	  []core.Mission
+	missions      []core.DeliveryMission
 
-	missionsChan 	chan core.MissionsRequest
-	moveChan   		chan core.MoveRequest
-	pickchan		chan core.PickRequest
-	deliverChan		chan core.DeliverRequest
-	spawnChans 		[]chan core.SpawnRequest
+	deliveryMissionsChan chan core.DeliveryMissionsRequest
+	chargingMissionChan  chan core.ChargingMissionRequest
+	exitChargingChan     chan core.ExitChargingRequest
+	moveChan             chan core.MoveRequest
+	pickchan             chan core.PickRequest
+	deliverChan          chan core.DeliverRequest
+	spawnChans           []chan core.SpawnRequest
 }
 
 func NewEnvironment(w *world.Map) *Environment {
@@ -26,15 +28,17 @@ func NewEnvironment(w *world.Map) *Environment {
 	}
 
 	return &Environment{
-		agents:        make([]core.IAgent, 0),
-		spawnedAgents: make([]core.IAgent, 0),
-		world:         w,
-		objects:       make([]core.Delivery, 0),
-		missionsChan:  make(chan core.MissionsRequest),
-		moveChan:      make(chan core.MoveRequest),
-		pickchan: 	   make(chan core.PickRequest, 50),
-		deliverChan:   make(chan core.DeliverRequest, 50),
-		spawnChans:    spawnChans,
+		agents:               make([]core.IAgent, 0),
+		spawnedAgents:        make([]core.IAgent, 0),
+		world:                w,
+		objects:              make([]core.Delivery, 0),
+		deliveryMissionsChan: make(chan core.DeliveryMissionsRequest),
+		chargingMissionChan:  make(chan core.ChargingMissionRequest),
+		exitChargingChan:     make(chan core.ExitChargingRequest),
+		moveChan:             make(chan core.MoveRequest),
+		pickchan:             make(chan core.PickRequest, 50),
+		deliverChan:          make(chan core.DeliverRequest, 50),
+		spawnChans:           spawnChans,
 	}
 }
 
@@ -43,13 +47,16 @@ func (e *Environment) Start() {
 	go e.moveRequest()
 	go e.pickRequest()
 	go e.deliverRequest()
-	go e.missionsRequest()
+	go e.deliveryMissionsRequest()
+	go e.chargingMissionRequest()
+	go e.exitChargingRequest()
 	go e.generateMissions()
 }
 
 func (e *Environment) AddAgent(factory core.AgentFactory) {
 	randomPos, idx := e.world.RandomSpawner()
-	e.agents = append(e.agents, factory(randomPos, e.missionsChan, e.moveChan, e.pickchan, e.deliverChan, e.spawnChans[idx]))
+	chanRqs := core.NewChannelRequests(e.deliveryMissionsChan, e.chargingMissionChan, e.exitChargingChan, e.moveChan, e.pickchan, e.deliverChan, e.spawnChans[idx])
+	e.agents = append(e.agents, factory(randomPos, chanRqs))
 }
 
 func (e *Environment) World() *world.Map {
@@ -64,6 +71,6 @@ func (e *Environment) SpawnedAgents() []core.IAgent {
 	return e.spawnedAgents
 }
 
-func (e *Environment) Missions() []core.Mission {
+func (e *Environment) Missions() []core.DeliveryMission {
 	return e.missions
 }

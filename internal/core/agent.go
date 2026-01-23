@@ -6,20 +6,20 @@ type AgentID string
 
 type IAgent interface {
 	ClickableEntity
-	
-	ID() 		AgentID
+
+	ID() AgentID
 	Start()
 	Percept()
 	Deliberate()
 	Act()
 
-	Spawned() 	bool
-	Position() 	world.Position
+	Spawned() bool
+	Position() world.Position
 	Move()
-	Mission() 	*Mission
+	Mission() *DeliveryMission
 	TargetPos() world.Position
 
 	SurroundingAgents() []IAgent
 }
 
-type AgentFactory func(pos world.Position, missionsChan chan MissionsRequest, moveChan chan MoveRequest, pickChan chan PickRequest, deliverChan chan DeliverRequest, spawnChan chan SpawnRequest) IAgent
+type AgentFactory func(pos world.Position, chanReqs ChannelRequests) IAgent

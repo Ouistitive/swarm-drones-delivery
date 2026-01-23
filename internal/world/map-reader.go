@@ -21,6 +21,7 @@ func loadMap(content string) *Map {
 	spawners := make([]Position, 0)
 	deliveryDestinations := make([]Position, 0)
 	warehouses := make([]Position, 0)
+	chargingPoints := make([]ChargingPoint, 0)
 
 	y := 0.0
 	for _, line := range lines {
@@ -36,11 +37,13 @@ func loadMap(content string) *Map {
 				deliveryDestinations = append(deliveryDestinations, NewPosition(float64(x), y))
 			case 'W':
 				warehouses = append(warehouses, NewPosition(float64(x), y))
+			case 'C':
+				chargingPoints = append(chargingPoints, NewChargingPoint(NewPosition(float64(x), y)))
 			}
 		}
 
 		y++
 	}
 
-	return &Map{Width: len(lines[0]), Height: len(lines), Cells: cells, Rooftops: rooftops, Spawners: spawners, DeliveryDest: deliveryDestinations, Warehouses: warehouses}
+	return &Map{Width: len(lines[0]), Height: len(lines), Cells: cells, Rooftops: rooftops, Spawners: spawners, DeliveryDest: deliveryDestinations, Warehouses: warehouses, ChargingPoints: chargingPoints}
 }

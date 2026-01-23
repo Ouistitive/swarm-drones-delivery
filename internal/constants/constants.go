@@ -12,4 +12,6 @@ var (
 	LOW_DISTANCE = 5.0
 	
 	VISION_RANGE = 7.0
+
+	MAX_BATTERY = 100.0
 )
