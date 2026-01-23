@@ -13,17 +13,29 @@ const (
 	MissionRecharge
 )
 
-type Mission struct {
+type Mission interface {
+	Id()			uuid.UUID
+	Destination()	world.Position
+}
+
+type DeliveryMission struct {
 	Id   uuid.UUID
 	Type MissionType
 
 	TargetDelivery *Delivery
 	Destination    world.Position
-	Ok 			   bool
+	Ok             bool
 }
 
-func NewDeliveryMission(uuid uuid.UUID, targetDel *Delivery, dest world.Position) *Mission {
-	return &Mission{
+type ChargingMission struct {
+	Id uuid.UUID
+
+	TargetCharging *world.ChargingPoint
+	Ok             bool
+}
+
+func NewDeliveryMission(uuid uuid.UUID, targetDel *Delivery, dest world.Position) *DeliveryMission {
+	return &DeliveryMission{
 		Id:             uuid,
 		Type:           MissionDelivery,
 		TargetDelivery: targetDel,
@@ -31,12 +43,10 @@ func NewDeliveryMission(uuid uuid.UUID, targetDel *Delivery, dest world.Position
 	}
 }
 
-func NewRechargeMission(uuid uuid.UUID, dest world.Position, ok bool) *Mission {
-	return &Mission{
+func NewRechargeMission(uuid uuid.UUID, dest *world.ChargingPoint, ok bool) *ChargingMission {
+	return &ChargingMission{
 		Id:             uuid,
-		Type:           MissionRecharge,
-		Destination:    dest,
-		TargetDelivery: nil,
-		Ok: 			ok,
+		TargetCharging: dest,
+		Ok:             ok,
 	}
 }

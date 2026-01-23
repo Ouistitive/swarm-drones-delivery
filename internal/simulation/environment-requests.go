@@ -12,7 +12,7 @@ import (
 
 func (e *Environment) deliveryMissionsRequest() {
 	for missionRequest := range e.deliveryMissionsChan {
-		cp := make([]core.Mission, len(e.missions))
+		cp := make([]core.DeliveryMission, len(e.missions))
 		copy(cp, e.missions)
 		missionRequest.ResponseChannel <- cp
 	}
@@ -23,11 +23,19 @@ func (e *Environment) chargingMissionRequest() {
 		agtPos := missionRequest.Agt.Position()
 		nearestChargingPoint := e.getNearestChargingPoint(agtPos)
 		if nearestChargingPoint != nil {
-			nearestChargingPoint.State = world.ChargingPointReserved
-			missionRequest.ResponseChannel <- *core.NewRechargeMission(uuid.New(), nearestChargingPoint.Pos, true)
+			nearestChargingPoint.State = world.ChargingPointOccupied
+			missionRequest.ResponseChannel <- *core.NewRechargeMission(uuid.New(), nearestChargingPoint, true)
 		} else {
-			missionRequest.ResponseChannel <- *core.NewRechargeMission(uuid.New(), world.NewPosition(-1, -1), false)
+			missionRequest.ResponseChannel <- *core.NewRechargeMission(uuid.New(), nil, false)
 		}
+	}
+}
+
+func (e *Environment) exitChargingRequest() {
+	for exitRequest := range e.exitChargingChan {
+		chargingPos := exitRequest.ChargingPoint
+		chargingPos.State = world.ChargingPointFree
+		exitRequest.ResponseChannel <- true
 	}
 }
 
@@ -83,7 +91,7 @@ func (e *Environment) deliverRequest() {
 	}
 }
 
-func (e *Environment) removeMission(toRemove core.Mission) {
+func (e *Environment) removeMission(toRemove core.DeliveryMission) {
 	for i, m := range e.missions {
 		if m.Id == toRemove.Id {
 			e.missions = append(e.missions[:i], e.missions[i+1:]...)
@@ -101,7 +109,7 @@ func (e *Environment) generateMissions() {
 func (e *Environment) getNearestChargingPoint(agtPos world.Position) *world.ChargingPoint {
 	nearestDist := 1000.0
 	var nearestChargingPoint *world.ChargingPoint = nil
-	
+
 	for i := range e.world.ChargingPoints {
 		cp := &e.world.ChargingPoints[i]
 

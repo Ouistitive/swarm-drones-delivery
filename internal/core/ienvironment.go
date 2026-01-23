@@ -5,9 +5,9 @@ import (
 )
 
 type IEnvironment interface {
-	Agents() 		[]IAgent
-	SpawnedAgents()	[]IAgent
-	World() 		*world.Map
+	Agents() []IAgent
+	SpawnedAgents() []IAgent
+	World() *world.Map
 
-	Missions()		[]Mission
+	Missions() []DeliveryMission
 }

@@ -4,7 +4,6 @@ type ChargingPointState int
 
 const (
 	ChargingPointFree ChargingPointState = iota
-	ChargingPointReserved
 	ChargingPointOccupied
 )
 
