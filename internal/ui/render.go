@@ -29,12 +29,23 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	g.drawObjects(screen)
 
 	if !g.isDebugMode {
+		g.drawAgentVision(screen)
 		g.drawLinesBetweenAgents(screen)
 		g.drawLinesBetweenAgentAndTarget(screen)
 	}
 
 	g.drawAgents(screen)
 	g.drawHUD(screen)
+}
+
+// Draw the map layers (cached from the init)
+func (g *Game) drawMap(screen *ebiten.Image) {
+	screen.DrawImage(g.groundLayer, nil)
+	screen.DrawImage(g.rooftopsLayer, nil)
+	screen.DrawImage(g.spawnersLayer, nil)
+	screen.DrawImage(g.deliveryDestLayer, nil)
+	screen.DrawImage(g.warehousesLayer, nil)
+	screen.DrawImage(g.chargingLayer, nil)
 }
 
 func (g *Game) drawHUD(screen *ebiten.Image) {
@@ -54,27 +65,6 @@ func (g *Game) drawHUD(screen *ebiten.Image) {
 
 	targetX, targetY := g.mapToDrawCoords(g.Hud.TargetPosition.X, g.Hud.TargetPosition.Y)
 	drawImageAt(screen, targetImg, targetX, targetY, nil)
-}
-
-func (g *Game) drawMap(screen *ebiten.Image) {
-	envMap := g.Sim.Env.World()
-
-	for y := 0.0; y < float64(envMap.Height); y++ {
-		for x := 0.0; x < float64(envMap.Width); x++ {
-			drawX, drawY := g.mapToDrawCoords(x, y)
-			drawImageAt(screen, groundImg, drawX, drawY, WHITE)
-		}
-	}
-
-	g.drawBlock(screen, envMap.Rooftops, BLACK)
-	g.drawBlock(screen, envMap.Spawners, RED)
-	g.drawBlock(screen, envMap.DeliveryDest, MAGENTA)
-	g.drawBlock(screen, envMap.Warehouses, BLUE)
-
-	for _, chargingPtn := range envMap.ChargingPoints {
-		drawX, drawY := g.mapToDrawCoords(chargingPtn.Pos.X, chargingPtn.Pos.Y)
-		drawImageAt(screen, groundImg, drawX, drawY, YELLOW)
-	}
 }
 
 func (g *Game) drawObjects(screen *ebiten.Image) {
@@ -119,5 +109,17 @@ func (g *Game) drawLinesBetweenAgentAndTarget(screen *ebiten.Image) {
 		drawX, drawY := g.mapToDrawCoordsCentered(agt.Position().X, agt.Position().Y)
 		tX, tY := g.mapToDrawCoordsCentered(agt.TargetPos().X, agt.TargetPos().Y)
 		vector.StrokeLine(screen, float32(drawX), float32(drawY), float32(tX), float32(tY), 1, color.RGBA{255, 0, 0, 255}, false)
+	})
+}
+
+func (g *Game) drawAgentVision(screen *ebiten.Image) {
+	offset := constants.VISION_RANGE * float64(constants.CELL_SIZE)
+
+	g.forEachSpawnedAgents(func(agt core.IAgent) {
+		agtX, agtY := g.mapToDrawCoordsCentered(agt.Position().X, agt.Position().Y)
+
+		op := &ebiten.DrawImageOptions{}
+		op.GeoM.Translate(agtX-offset, agtY-offset)
+		screen.DrawImage(g.visionCircle, op)
 	})
 }
