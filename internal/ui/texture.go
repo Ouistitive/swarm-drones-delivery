@@ -3,6 +3,7 @@ package ui
 import (
 	"log"
 	"os"
+	"swarm-drones-delivery/internal/constants"
 	"swarm-drones-delivery/internal/ui/hud"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -12,10 +13,11 @@ import (
 )
 
 var (
-	groundImg   *ebiten.Image
-	droneImg    *ebiten.Image
-	deliveryImg *ebiten.Image
-	targetImg   *ebiten.Image
+	groundImg   	*ebiten.Image
+	droneImg    	*ebiten.Image
+	deliveryImg 	*ebiten.Image
+	targetImg   	*ebiten.Image
+	visionCircle 	*ebiten.Image
 )
 
 func init() {
@@ -56,4 +58,6 @@ func init() {
 		DPI:     96,
 		Hinting: font.HintingFull,
 	})
+
+	initVisionCircle(int(constants.VISION_RANGE))
 }

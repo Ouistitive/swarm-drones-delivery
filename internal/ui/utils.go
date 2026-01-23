@@ -1,11 +1,13 @@
 package ui
 
 import (
+	"image/color"
 	"swarm-drones-delivery/internal/constants"
 	"swarm-drones-delivery/internal/core"
 	"swarm-drones-delivery/internal/world"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/vector"
 )
 
 func (g *Game) mapToDrawCoords(mapX float64, mapY float64) (float64, float64) {
@@ -43,4 +45,18 @@ func (g *Game) drawBlock(screen *ebiten.Image, poses []world.Position, color *eb
 		drawX, drawY := g.mapToDrawCoords(pos.X, pos.Y)
 		drawImageAt(screen, groundImg, drawX, drawY, color)
 	}
+}
+
+func initVisionCircle(visionRadiusPx int) {
+    diameter := visionRadiusPx * constants.CELL_SIZE
+    visionCircle = ebiten.NewImage(diameter, diameter)
+
+    vector.FillCircle(
+        visionCircle,
+        float32(visionRadiusPx), // centre X
+        float32(visionRadiusPx), // centre Y
+        float32(visionRadiusPx), // rayon
+        color.RGBA{0, 0, 0, 10},
+        false,
+    )
 }

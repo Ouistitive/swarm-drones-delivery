@@ -29,6 +29,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	g.drawObjects(screen)
 
 	if !g.isDebugMode {
+		g.drawAgentVision(screen)
 		g.drawLinesBetweenAgents(screen)
 		g.drawLinesBetweenAgentAndTarget(screen)
 	}
@@ -119,5 +120,19 @@ func (g *Game) drawLinesBetweenAgentAndTarget(screen *ebiten.Image) {
 		drawX, drawY := g.mapToDrawCoordsCentered(agt.Position().X, agt.Position().Y)
 		tX, tY := g.mapToDrawCoordsCentered(agt.TargetPos().X, agt.TargetPos().Y)
 		vector.StrokeLine(screen, float32(drawX), float32(drawY), float32(tX), float32(tY), 1, color.RGBA{255, 0, 0, 255}, false)
+	})
+}
+
+func (g *Game) drawAgentVision(screen *ebiten.Image) {
+	g.forEachSpawnedAgents(func(agt core.IAgent) {
+		agtX, agtY := g.mapToDrawCoordsCentered(agt.Position().X, agt.Position().Y)
+		vector.FillCircle(
+			screen,
+			float32(agtX),
+			float32(agtY),
+			float32(constants.VISION_RANGE) * float32(constants.CELL_SIZE),
+			color.RGBA{0, 0, 0, 10},
+			false,
+		)
 	})
 }
