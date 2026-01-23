@@ -1,7 +1,6 @@
 package simulation
 
 import (
-	"fmt"
 	"swarm-drones-delivery/internal/core"
 	"swarm-drones-delivery/internal/world"
 )
@@ -56,7 +55,6 @@ func (e *Environment) Start() {
 
 func (e *Environment) AddAgent(factory core.AgentFactory) {
 	randomPos, idx := e.world.RandomSpawner()
-	fmt.Println(e.exitChargingChan)
 	chanRqs := core.NewChannelRequests(e.deliveryMissionsChan, e.chargingMissionChan, e.exitChargingChan, e.moveChan, e.pickchan, e.deliverChan, e.spawnChans[idx])
 	e.agents = append(e.agents, factory(randomPos, chanRqs))
 }

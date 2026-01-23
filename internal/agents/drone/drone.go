@@ -132,7 +132,7 @@ func (d *Drone) Deliberate() {
 		if time.Since(d.t) >= time.Second || d.deliveryMission == nil {
 			d.t = time.Now()
 			// Try to find a recharge the drone
-			if d.battery.Ratio() < 0.5 && d.state != StateRecharging {
+			if d.battery.Ratio() < constants.BATTERY_EMERGENCY_RATIO && d.state != StateRecharging {
 				d.chargingMission = d.getNearestChargingPoint()
 				if d.chargingMission != nil {
 					d.targetPos = d.chargingMission.TargetCharging.Pos
