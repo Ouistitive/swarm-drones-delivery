@@ -53,9 +53,9 @@ func initVisionCircle(visionRadiusPx int) {
 
     vector.FillCircle(
         visionCircle,
-        float32(visionRadiusPx), // centre X
-        float32(visionRadiusPx), // centre Y
-        float32(visionRadiusPx), // rayon
+        float32(visionRadiusPx),
+        float32(visionRadiusPx),
+        float32(visionRadiusPx),
         color.RGBA{0, 0, 0, 10},
         false,
     )
