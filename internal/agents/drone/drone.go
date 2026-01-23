@@ -9,8 +9,6 @@ import (
 	"swarm-drones-delivery/internal/core"
 	"swarm-drones-delivery/internal/utils"
 	"swarm-drones-delivery/internal/world"
-
-	"github.com/google/uuid"
 )
 
 //go:generate stringer -type=AgentState
@@ -45,12 +43,13 @@ type Drone struct {
 	vision          behaviors.Vision
 	surroundingAgts []core.IAgent
 
-	syncChan  		chan int
-	missionsChan 	chan core.MissionsRequest
-	moveChan  		chan core.MoveRequest
-	pickChan  		chan core.PickRequest
-	deliverChan 	chan core.DeliverRequest
-	spawnChan 		chan core.SpawnRequest
+	syncChan             chan int
+	deliveryMissionsChan chan core.DeliveryMissionsRequest
+	chargingMissionsChan chan core.ChargingMissionRequest
+	moveChan             chan core.MoveRequest
+	pickChan             chan core.PickRequest
+	deliverChan          chan core.DeliverRequest
+	spawnChan            chan core.SpawnRequest
 
 	pos        world.Position
 	targetPos  world.Position // What the drone is trying to go in a current state
@@ -88,7 +87,7 @@ func (d *Drone) TargetPos() world.Position {
 }
 
 func (d *Drone) GetDisplayData() string {
-	text:= fmt.Sprintf("AgentID: %s\nState: %s\nAction: %s\nBattery: %d", d.id, d.state.String(), d.nextAction.String(), int(d.battery.Ratio() * 100))
+	text := fmt.Sprintf("AgentID: %s\nState: %s\nAction: %s\nBattery: %d", d.id, d.state.String(), d.nextAction.String(), int(d.battery.Ratio()*100))
 	return text
 }
 
@@ -129,15 +128,20 @@ func (d *Drone) Deliberate() {
 	switch d.state {
 	case StateWandering:
 		if time.Since(d.t) >= time.Second || d.mission == nil {
-			d.generateTargetPosition()
-			d.changeTargetAngle()
 			d.t = time.Now()
-
+			// Try to find a recharge the drone
 			if d.battery.Ratio() < 0.5 && d.state != StateRecharging {
-				d.mission = core.NewRechargeMission(uuid.New(), d.env.World().ChargingPoints[0])
-				d.targetPos = d.env.World().ChargingPoints[0]
-				d.setDroneStateAndAction(StateMovingToRecharge, ActionMove)
-			} else if d.mission != nil && d.mission.TargetDelivery != nil {
+				d.mission = d.getNearestChargingPoint()
+				if d.mission != nil {
+					d.targetPos = d.mission.Destination
+					d.setDroneStateAndAction(StateMovingToRecharge, ActionMove)
+					return
+				}
+			}
+
+			// If cannot recharge, go deliver a new delivery
+			d.generateTargetPosition()
+			if d.mission != nil && d.mission.TargetDelivery != nil {
 				d.targetPos = d.mission.TargetDelivery.Position()
 				d.setDroneStateAndAction(StateMovingToDelivery, ActionMove)
 			}
@@ -155,7 +159,7 @@ func (d *Drone) Deliberate() {
 	case StateGrabbing:
 		if d.mission.TargetDelivery.Carrier == d {
 			d.targetPos = d.mission.Destination
-			d.setDroneStateAndAction(StateMovingToDestination, ActionMove)	
+			d.setDroneStateAndAction(StateMovingToDestination, ActionMove)
 		} else {
 			d.setDroneStateAndAction(StateMovingToDelivery, ActionMove)
 		}

@@ -10,13 +10,14 @@ type Environment struct {
 	spawnedAgents []core.IAgent
 	world         *world.Map
 	objects       []core.Delivery
-	missions 	  []core.Mission
+	missions      []core.Mission
 
-	missionsChan 	chan core.MissionsRequest
-	moveChan   		chan core.MoveRequest
-	pickchan		chan core.PickRequest
-	deliverChan		chan core.DeliverRequest
-	spawnChans 		[]chan core.SpawnRequest
+	deliveryMissionsChan chan core.DeliveryMissionsRequest
+	chargingMissionChan  chan core.ChargingMissionRequest
+	moveChan             chan core.MoveRequest
+	pickchan             chan core.PickRequest
+	deliverChan          chan core.DeliverRequest
+	spawnChans           []chan core.SpawnRequest
 }
 
 func NewEnvironment(w *world.Map) *Environment {
@@ -26,15 +27,16 @@ func NewEnvironment(w *world.Map) *Environment {
 	}
 
 	return &Environment{
-		agents:        make([]core.IAgent, 0),
-		spawnedAgents: make([]core.IAgent, 0),
-		world:         w,
-		objects:       make([]core.Delivery, 0),
-		missionsChan:  make(chan core.MissionsRequest),
-		moveChan:      make(chan core.MoveRequest),
-		pickchan: 	   make(chan core.PickRequest, 50),
-		deliverChan:   make(chan core.DeliverRequest, 50),
-		spawnChans:    spawnChans,
+		agents:               make([]core.IAgent, 0),
+		spawnedAgents:        make([]core.IAgent, 0),
+		world:                w,
+		objects:              make([]core.Delivery, 0),
+		deliveryMissionsChan: make(chan core.DeliveryMissionsRequest),
+		chargingMissionChan:  make(chan core.ChargingMissionRequest),
+		moveChan:             make(chan core.MoveRequest),
+		pickchan:             make(chan core.PickRequest, 50),
+		deliverChan:          make(chan core.DeliverRequest, 50),
+		spawnChans:           spawnChans,
 	}
 }
 
@@ -43,13 +45,14 @@ func (e *Environment) Start() {
 	go e.moveRequest()
 	go e.pickRequest()
 	go e.deliverRequest()
-	go e.missionsRequest()
+	go e.deliveryMissionsRequest()
+	go e.chargingMissionRequest()
 	go e.generateMissions()
 }
 
 func (e *Environment) AddAgent(factory core.AgentFactory) {
 	randomPos, idx := e.world.RandomSpawner()
-	e.agents = append(e.agents, factory(randomPos, e.missionsChan, e.moveChan, e.pickchan, e.deliverChan, e.spawnChans[idx]))
+	e.agents = append(e.agents, factory(randomPos, e.deliveryMissionsChan, e.chargingMissionChan, e.moveChan, e.pickchan, e.deliverChan, e.spawnChans[idx]))
 }
 
 func (e *Environment) World() *world.Map {

@@ -19,6 +19,7 @@ type Mission struct {
 
 	TargetDelivery *Delivery
 	Destination    world.Position
+	Ok 			   bool
 }
 
 func NewDeliveryMission(uuid uuid.UUID, targetDel *Delivery, dest world.Position) *Mission {
@@ -30,11 +31,12 @@ func NewDeliveryMission(uuid uuid.UUID, targetDel *Delivery, dest world.Position
 	}
 }
 
-func NewRechargeMission(uuid uuid.UUID, dest world.Position) *Mission {
+func NewRechargeMission(uuid uuid.UUID, dest world.Position, ok bool) *Mission {
 	return &Mission{
 		Id:             uuid,
 		Type:           MissionRecharge,
 		Destination:    dest,
 		TargetDelivery: nil,
+		Ok: 			ok,
 	}
 }

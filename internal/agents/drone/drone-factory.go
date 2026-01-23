@@ -9,26 +9,27 @@ import (
 	"swarm-drones-delivery/internal/world"
 )
 
-func NewDrone(env core.IEnvironment, agtId core.AgentID, pos world.Position, syncChan chan int, missionsChan chan core.MissionsRequest, moveChan chan core.MoveRequest, pickChan chan core.PickRequest, deliverChan chan core.DeliverRequest, spawnChan chan core.SpawnRequest) *Drone {
+func NewDrone(env core.IEnvironment, agtId core.AgentID, pos world.Position, syncChan chan int, deliveryMissionsChan chan core.DeliveryMissionsRequest, chargingMissionChan chan core.ChargingMissionRequest, moveChan chan core.MoveRequest, pickChan chan core.PickRequest, deliverChan chan core.DeliverRequest, spawnChan chan core.SpawnRequest) *Drone {
 	return &Drone{
-		t:               time.Now(),
-		env:             env,
-		id:              agtId,
-		hasSpawned:      false,
-		vision:          behaviors.NewVision(constants.VISION_RANGE),
-		syncChan:        syncChan,
-		missionsChan: 	 missionsChan,
-		moveChan:        moveChan,
-		pickChan: 		 pickChan,
-		deliverChan: 	 deliverChan,
-		spawnChan:       spawnChan,
-		pos:             pos,
-		surroundingAgts: []core.IAgent{},
-		targetDir:       world.NullPosition(),
-		currentDir:      world.NullPosition(),
-		velocity:        0.0,
-		state:           StateWandering,
-		battery: 		 behaviors.NewBattery(),
+		t:                    time.Now(),
+		env:                  env,
+		id:                   agtId,
+		hasSpawned:           false,
+		vision:               behaviors.NewVision(constants.VISION_RANGE),
+		syncChan:             syncChan,
+		deliveryMissionsChan: deliveryMissionsChan,
+		chargingMissionsChan: chargingMissionChan,
+		moveChan:             moveChan,
+		pickChan:             pickChan,
+		deliverChan:          deliverChan,
+		spawnChan:            spawnChan,
+		pos:                  pos,
+		surroundingAgts:      []core.IAgent{},
+		targetDir:            world.NullPosition(),
+		currentDir:           world.NullPosition(),
+		velocity:             0.0,
+		state:                StateWandering,
+		battery:              behaviors.NewBattery(),
 	}
 }
 
@@ -37,17 +38,18 @@ func DroneFactory(
 	agtId core.AgentID,
 	syncChan chan int,
 ) core.AgentFactory {
-	return func(pos world.Position, missionsChan chan core.MissionsRequest, moveChan chan core.MoveRequest, pickChan chan core.PickRequest, deliverChan chan core.DeliverRequest, spawnChan chan core.SpawnRequest) core.IAgent {
+	return func(pos world.Position, chanReqs core.ChannelRequests) core.IAgent {
 		return NewDrone(
 			env,
 			agtId,
 			pos,
 			syncChan,
-			missionsChan,
-			moveChan,
-			pickChan,
-			deliverChan,
-			spawnChan,
+			chanReqs.DeliveryMissionsChan,
+			chanReqs.ChargingMissionChan,
+			chanReqs.MoveChan,
+			chanReqs.PickChan,
+			chanReqs.DeliverChan,
+			chanReqs.SpawnChan,
 		)
 	}
 }

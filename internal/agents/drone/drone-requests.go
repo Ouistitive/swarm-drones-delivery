@@ -12,8 +12,8 @@ func (d *Drone) setDroneStateAndAction(state AgentState, act ActionType) {
 
 func (d *Drone) getMissions() {
 	missionsChanResponse := make(chan []core.Mission)
-	d.missionsChan <- core.MissionsRequest{ResponseChannel: missionsChanResponse}
-	m := <- missionsChanResponse
+	d.deliveryMissionsChan <- core.DeliveryMissionsRequest{ResponseChannel: missionsChanResponse}
+	m := <-missionsChanResponse
 	if len(m) == 0 {
 		d.mission = nil
 	} else {
@@ -21,37 +21,41 @@ func (d *Drone) getMissions() {
 	}
 }
 
-func (d *Drone) getNearestChargingPoint() {
-	// missionsChanResponse := make(chan []core.Mission)
-	// d.missionsChan <- core.MissionsRequest{ResponseChannel: missionsChanResponse}
-	// m := <- missionsChanResponse
+func (d *Drone) getNearestChargingPoint() *core.Mission {
+	missionsChanResponse := make(chan core.Mission)
+	d.chargingMissionsChan <- core.ChargingMissionRequest{Agt: d, ResponseChannel: missionsChanResponse}
+	m := <- missionsChanResponse
+	if m.Ok {
+		return &m
+	}
+	return nil
 }
 
 func (d *Drone) move() {
 	moveChanResponse := make(chan bool)
 	d.moveChan <- core.MoveRequest{Agt: d, ResponseChannel: moveChanResponse}
-	<- moveChanResponse
+	<-moveChanResponse
 }
 
 func (d *Drone) grab() {
 	pickChanResponse := make(chan bool)
 	d.pickChan <- core.PickRequest{
-		Agt: d, 
-		Deliv: d.mission.TargetDelivery, 
+		Agt:             d,
+		Deliv:           d.mission.TargetDelivery,
 		ResponseChannel: pickChanResponse,
 	}
-	<- pickChanResponse
+	<-pickChanResponse
 }
 
 func (d *Drone) deliver() {
 	pickChanResponse := make(chan bool)
 	d.deliverChan <- core.DeliverRequest{
-		Agt: d, 
-		Deliv: d.mission.TargetDelivery, 
+		Agt:             d,
+		Deliv:           d.mission.TargetDelivery,
 		ResponseChannel: pickChanResponse,
 	}
-	
-	res := <- pickChanResponse
+
+	res := <-pickChanResponse
 	if res {
 		d.mission = nil
 	}

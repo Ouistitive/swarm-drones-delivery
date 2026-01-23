@@ -12,7 +12,7 @@ type Map struct {
 	Spawners      	[]Position
 	DeliveryDest  	[]Position
 	Warehouses 	  	[]Position
-	ChargingPoints 	[]Position
+	ChargingPoints 	[]ChargingPoint
 }
 
 func NewMap(width, height int) *Map {
@@ -23,7 +23,7 @@ func NewMap(width, height int) *Map {
 		Spawners:     	make([]Position, 0),
 		DeliveryDest: 	make([]Position, 0),
 		Warehouses:   	make([]Position, 0),
-		ChargingPoints: make([]Position, 0),
+		ChargingPoints: make([]ChargingPoint, 0),
 	}
 
 	m.Cells = make([][]rune, height)

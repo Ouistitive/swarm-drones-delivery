@@ -3,16 +3,31 @@ package simulation
 import (
 	"swarm-drones-delivery/internal/constants"
 	"swarm-drones-delivery/internal/core"
+	"swarm-drones-delivery/internal/utils"
+	"swarm-drones-delivery/internal/world"
 	"time"
 
 	"github.com/google/uuid"
 )
 
-func (e *Environment) missionsRequest() {
-	for missionRequest := range e.missionsChan {
+func (e *Environment) deliveryMissionsRequest() {
+	for missionRequest := range e.deliveryMissionsChan {
 		cp := make([]core.Mission, len(e.missions))
 		copy(cp, e.missions)
 		missionRequest.ResponseChannel <- cp
+	}
+}
+
+func (e *Environment) chargingMissionRequest() {
+	for missionRequest := range e.chargingMissionChan {
+		agtPos := missionRequest.Agt.Position()
+		nearestChargingPoint := e.getNearestChargingPoint(agtPos)
+		if nearestChargingPoint != nil {
+			nearestChargingPoint.State = world.ChargingPointReserved
+			missionRequest.ResponseChannel <- *core.NewRechargeMission(uuid.New(), nearestChargingPoint.Pos, true)
+		} else {
+			missionRequest.ResponseChannel <- *core.NewRechargeMission(uuid.New(), world.NewPosition(-1, -1), false)
+		}
 	}
 }
 
@@ -81,4 +96,23 @@ func (e *Environment) generateMissions() {
 		e.missions = append(e.missions, *core.NewDeliveryMission(uuid.New(), core.NewDelivery(e.world.RandomWarehouses()), e.world.RandomDeliveryDestination()))
 		time.Sleep(time.Second)
 	}
+}
+
+func (e *Environment) getNearestChargingPoint(agtPos world.Position) *world.ChargingPoint {
+	nearestDist := 1000.0
+	var nearestChargingPoint *world.ChargingPoint = nil
+	
+	for i := range e.world.ChargingPoints {
+		cp := &e.world.ChargingPoints[i]
+
+		if cp.State == world.ChargingPointFree {
+			dist := utils.GetDistance(agtPos, cp.Pos)
+			if dist < nearestDist {
+				nearestDist = dist
+				nearestChargingPoint = cp
+			}
+		}
+	}
+
+	return nearestChargingPoint
 }
