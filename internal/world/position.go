@@ -5,7 +5,7 @@ type Position struct {
 }
 
 func NewPosition(x, y float64) Position {
-	return Position{ X: x, Y: y }
+	return Position{X: x, Y: y}
 }
 
 func NullPosition() Position {

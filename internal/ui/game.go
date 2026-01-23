@@ -8,9 +8,9 @@ import (
 )
 
 type Game struct {
-	Sim 		*simulation.Simulation
-	Hud 		hud.Hud
-	isDebugMode	bool
+	Sim         *simulation.Simulation
+	Hud         hud.Hud
+	isDebugMode bool
 }
 
 func NewGame(mapPath string) *Game {
@@ -21,7 +21,7 @@ func NewGame(mapPath string) *Game {
 	}
 
 	return &Game{
-		Sim: sim,
+		Sim:         sim,
 		isDebugMode: false,
 	}
 }

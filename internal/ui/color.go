@@ -8,8 +8,8 @@ var (
 
 	RED     *ebiten.ColorScale
 	MAGENTA *ebiten.ColorScale
-	BLUE	*ebiten.ColorScale
-	YELLOW	*ebiten.ColorScale
+	BLUE    *ebiten.ColorScale
+	YELLOW  *ebiten.ColorScale
 )
 
 func init() {
@@ -32,7 +32,7 @@ func init() {
 	MAGENTA.SetR(255)
 	MAGENTA.SetG(0)
 	MAGENTA.SetB(255)
-	
+
 	BLUE = &ebiten.ColorScale{}
 	BLUE.SetR(0)
 	BLUE.SetG(0)

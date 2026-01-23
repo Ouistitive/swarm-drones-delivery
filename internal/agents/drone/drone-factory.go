@@ -19,7 +19,7 @@ func NewDrone(env core.IEnvironment, agtId core.AgentID, pos world.Position, syn
 		syncChan:             syncChan,
 		deliveryMissionsChan: rqs.DeliveryMissionsChan,
 		chargingMissionsChan: rqs.ChargingMissionChan,
-		exitChargingChan: 	  rqs.ExitChargingChan,
+		exitChargingChan:     rqs.ExitChargingChan,
 		moveChan:             rqs.MoveChan,
 		pickChan:             rqs.PickChan,
 		deliverChan:          rqs.DeliverChan,

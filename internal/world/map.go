@@ -6,23 +6,23 @@ import (
 )
 
 type Map struct {
-	Width, Height 	int
-	Cells         	[][]rune
-	Rooftops      	[]Position
-	Spawners      	[]Position
-	DeliveryDest  	[]Position
-	Warehouses 	  	[]Position
-	ChargingPoints 	[]ChargingPoint
+	Width, Height  int
+	Cells          [][]rune
+	Rooftops       []Position
+	Spawners       []Position
+	DeliveryDest   []Position
+	Warehouses     []Position
+	ChargingPoints []ChargingPoint
 }
 
 func NewMap(width, height int) *Map {
 	m := &Map{
-		Width:        	width,
-		Height:       	height,
-		Rooftops:     	make([]Position, 0),
-		Spawners:     	make([]Position, 0),
-		DeliveryDest: 	make([]Position, 0),
-		Warehouses:   	make([]Position, 0),
+		Width:          width,
+		Height:         height,
+		Rooftops:       make([]Position, 0),
+		Spawners:       make([]Position, 0),
+		DeliveryDest:   make([]Position, 0),
+		Warehouses:     make([]Position, 0),
 		ChargingPoints: make([]ChargingPoint, 0),
 	}
 

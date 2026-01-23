@@ -11,17 +11,17 @@ import (
 )
 
 type Simulation struct {
-	Env 		*Environment
-	syncChans 	sync.Map
-	tickCount 	int
+	Env         *Environment
+	syncChans   sync.Map
+	tickCount   int
 	ticDuration int
 }
 
-func NewSimulation(m *world.Map) (*Simulation) {
+func NewSimulation(m *world.Map) *Simulation {
 	sim := &Simulation{
-		Env: 			NewEnvironment(m),
-		tickCount: 		0,
-		ticDuration: 	constants.TIC_DURATION,
+		Env:         NewEnvironment(m),
+		tickCount:   0,
+		ticDuration: constants.TIC_DURATION,
 	}
 
 	for i := range constants.NB_AGENTS {

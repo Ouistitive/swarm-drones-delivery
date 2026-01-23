@@ -14,8 +14,8 @@ const (
 )
 
 type Mission interface {
-	Id()			uuid.UUID
-	Destination()	world.Position
+	Id() uuid.UUID
+	Destination() world.Position
 }
 
 type DeliveryMission struct {

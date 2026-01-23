@@ -12,15 +12,15 @@ import (
 )
 
 var (
-	groundImg            *ebiten.Image
-	droneImg   	         *ebiten.Image
-	deliveryImg 		 *ebiten.Image
-	targetImg 			 *ebiten.Image
+	groundImg   *ebiten.Image
+	droneImg    *ebiten.Image
+	deliveryImg *ebiten.Image
+	targetImg   *ebiten.Image
 )
 
 func init() {
 	var err error
-	
+
 	groundImg, _, err = ebitenutil.NewImageFromFile("assets/ground.png")
 	if err != nil {
 		log.Printf("Warning: Could not load ground.png: %v", err)

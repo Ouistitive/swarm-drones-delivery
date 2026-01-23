@@ -61,7 +61,7 @@ func NewChannelRequests(
 	return ChannelRequests{
 		DeliveryMissionsChan: deliveryMissionsChan,
 		ChargingMissionChan:  chargingMissionChan,
-		ExitChargingChan: 	  exitChargingChan,
+		ExitChargingChan:     exitChargingChan,
 		MoveChan:             moveChan,
 		PickChan:             pickChan,
 		DeliverChan:          deliverChan,

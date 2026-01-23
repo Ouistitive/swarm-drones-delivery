@@ -69,7 +69,7 @@ func (d *Drone) exitCharging() {
 		ResponseChannel: chargingChanResponse,
 	}
 
-	res := <- chargingChanResponse
+	res := <-chargingChanResponse
 	if res {
 		d.chargingMission = nil
 	}

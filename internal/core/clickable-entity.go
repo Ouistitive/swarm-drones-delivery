@@ -3,6 +3,6 @@ package core
 import "swarm-drones-delivery/internal/world"
 
 type ClickableEntity interface {
-	GetDisplayData() 	string
-	Position()			world.Position
+	GetDisplayData() string
+	Position() world.Position
 }

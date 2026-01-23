@@ -8,13 +8,13 @@ const (
 )
 
 type ChargingPoint struct {
-	Pos 	Position
-	State 	ChargingPointState
+	Pos   Position
+	State ChargingPointState
 }
 
 func NewChargingPoint(pos Position) ChargingPoint {
 	return ChargingPoint{
-		Pos: 	pos,
-		State: 	ChargingPointFree,
+		Pos:   pos,
+		State: ChargingPointFree,
 	}
 }
