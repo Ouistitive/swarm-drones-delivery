@@ -12,7 +12,7 @@ func (d *Drone) setDroneStateAndAction(state AgentState, act ActionType) {
 
 func (d *Drone) getMissions() {
 	missionsChanResponse := make(chan []core.DeliveryMission)
-	d.deliveryMissionsChan <- core.DeliveryMissionsRequest{ResponseChannel: missionsChanResponse}
+	d.requests.DeliveryMissionsChan <- core.DeliveryMissionsRequest{ResponseChannel: missionsChanResponse}
 	m := <-missionsChanResponse
 	if len(m) == 0 {
 		d.deliveryMission = nil
@@ -23,7 +23,7 @@ func (d *Drone) getMissions() {
 
 func (d *Drone) getNearestChargingPoint() *core.ChargingMission {
 	missionsChanResponse := make(chan core.ChargingMission)
-	d.chargingMissionsChan <- core.ChargingMissionRequest{Agt: d, ResponseChannel: missionsChanResponse}
+	d.requests.ChargingMissionChan <- core.ChargingMissionRequest{Agt: d, ResponseChannel: missionsChanResponse}
 	m := <-missionsChanResponse
 	if m.Ok {
 		return &m
@@ -33,13 +33,13 @@ func (d *Drone) getNearestChargingPoint() *core.ChargingMission {
 
 func (d *Drone) move() {
 	moveChanResponse := make(chan bool)
-	d.moveChan <- core.MoveRequest{Agt: d, ResponseChannel: moveChanResponse}
+	d.requests.MoveChan <- core.MoveRequest{Agt: d, ResponseChannel: moveChanResponse}
 	<-moveChanResponse
 }
 
 func (d *Drone) grab() {
 	pickChanResponse := make(chan bool)
-	d.pickChan <- core.PickRequest{
+	d.requests.PickChan <- core.PickRequest{
 		Agt:             d,
 		Deliv:           d.deliveryMission.TargetDelivery,
 		ResponseChannel: pickChanResponse,
@@ -49,7 +49,7 @@ func (d *Drone) grab() {
 
 func (d *Drone) deliver() {
 	pickChanResponse := make(chan bool)
-	d.deliverChan <- core.DeliverRequest{
+	d.requests.DeliverChan <- core.DeliverRequest{
 		Agt:             d,
 		Deliv:           d.deliveryMission.TargetDelivery,
 		ResponseChannel: pickChanResponse,
@@ -63,7 +63,7 @@ func (d *Drone) deliver() {
 
 func (d *Drone) exitCharging() {
 	chargingChanResponse := make(chan bool)
-	d.exitChargingChan <- core.ExitChargingRequest{
+	d.requests.ExitChargingChan <- core.ExitChargingRequest{
 		Agt:             d,
 		ChargingPoint:   d.chargingMission.TargetCharging,
 		ResponseChannel: chargingChanResponse,

@@ -4,8 +4,6 @@ import (
 	"swarm-drones-delivery/internal/world"
 )
 
-type ObjectId string
-
 type DeliveryState int
 
 const (

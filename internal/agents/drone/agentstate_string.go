@@ -8,18 +8,19 @@ func _() {
 	// An "invalid array index" compiler error signifies that the constant values have changed.
 	// Re-run the stringer command to generate them again.
 	var x [1]struct{}
-	_ = x[StateWandering-0]
-	_ = x[StateMovingToDelivery-1]
-	_ = x[StateMovingToRecharge-2]
-	_ = x[StateMovingToDestination-3]
-	_ = x[StateGrabbing-4]
-	_ = x[StateDelivering-5]
-	_ = x[StateRecharging-6]
+	_ = x[StateFindingMission-0]
+	_ = x[StateWandering-1]
+	_ = x[StateMovingToDelivery-2]
+	_ = x[StateMovingToRecharge-3]
+	_ = x[StateMovingToDestination-4]
+	_ = x[StateGrabbing-5]
+	_ = x[StateDelivering-6]
+	_ = x[StateRecharging-7]
 }
 
-const _AgentState_name = "StateWanderingStateMovingToDeliveryStateMovingToRechargeStateMovingToDestinationStateGrabbingStateDeliveringStateRecharging"
+const _AgentState_name = "StateFindingMissionStateWanderingStateMovingToDeliveryStateMovingToRechargeStateMovingToDestinationStateGrabbingStateDeliveringStateRecharging"
 
-var _AgentState_index = [...]uint8{0, 14, 35, 56, 80, 93, 108, 123}
+var _AgentState_index = [...]uint8{0, 19, 33, 54, 75, 99, 112, 127, 142}
 
 func (i AgentState) String() string {
 	idx := int(i) - 0

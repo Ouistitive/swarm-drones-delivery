@@ -10,7 +10,7 @@ type Map struct {
 	Cells          [][]rune
 	Rooftops       []Position
 	Spawners       []Position
-	DeliveryDest   []Position
+	DeliveryDests  []DeliveryDestination
 	Warehouses     []Position
 	ChargingPoints []ChargingPoint
 }
@@ -21,7 +21,7 @@ func NewMap(width, height int) *Map {
 		Height:         height,
 		Rooftops:       make([]Position, 0),
 		Spawners:       make([]Position, 0),
-		DeliveryDest:   make([]Position, 0),
+		DeliveryDests:  make([]DeliveryDestination, 0),
 		Warehouses:     make([]Position, 0),
 		ChargingPoints: make([]ChargingPoint, 0),
 	}
@@ -46,9 +46,9 @@ func (m *Map) RandomSpawner() (Position, int) {
 	return m.Spawners[n], n
 }
 
-func (m *Map) RandomDeliveryDestination() Position {
-	n := rand.Intn(len(m.DeliveryDest))
-	return m.DeliveryDest[n]
+func (m *Map) RandomDeliveryDestination() DeliveryDestination {
+	n := rand.Intn(len(m.DeliveryDests))
+	return m.DeliveryDests[n]
 }
 
 func (m *Map) RandomWarehouses() Position {

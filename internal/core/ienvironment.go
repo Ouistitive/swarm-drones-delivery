@@ -8,6 +8,7 @@ type IEnvironment interface {
 	Agents() []IAgent
 	SpawnedAgents() []IAgent
 	World() *world.Map
+	Destinations() []world.DeliveryDestination
 
 	Missions() []DeliveryMission
 }

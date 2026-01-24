@@ -27,12 +27,12 @@ type Game struct {
 	visionCircle *ebiten.Image
 }
 
-func NewGame(mapPath string) *Game {
-	m, err := world.ReadMap(mapPath)
-	sim := simulation.NewSimulation(m)
+func NewGame(mapPath, addressesPath string) *Game {
+	m, err := world.ReadMap(mapPath, addressesPath)
 	if err != nil {
 		log.Fatal("Cannot load map")
 	}
+	sim := simulation.NewSimulation(m)
 
 	g := &Game{
 		Sim:         sim,
@@ -67,8 +67,12 @@ func (g *Game) buildGroundCache() {
 
 	g.drawBlock(g.rooftopsLayer, envMap.Rooftops, BLACK)
 	g.drawBlock(g.spawnersLayer, envMap.Spawners, RED)
-	g.drawBlock(g.deliveryDestLayer, envMap.DeliveryDest, MAGENTA)
 	g.drawBlock(g.warehousesLayer, envMap.Warehouses, BLUE)
+
+	for _, delDest := range envMap.DeliveryDests {
+		drawX, drawY := g.mapToDrawCoords(delDest.Pos.X, delDest.Pos.Y)
+		drawImageAt(g.deliveryDestLayer, groundImg, drawX, drawY, YELLOW)
+	}
 
 	for _, chargingPtn := range envMap.ChargingPoints {
 		drawX, drawY := g.mapToDrawCoords(chargingPtn.Pos.X, chargingPtn.Pos.Y)

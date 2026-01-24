@@ -1,7 +1,6 @@
 package behaviors
 
 import (
-	"swarm-drones-delivery/internal/core"
 	"swarm-drones-delivery/internal/utils"
 	"swarm-drones-delivery/internal/world"
 )
@@ -16,6 +15,6 @@ func NewVision(visionRange float64) Vision {
 	}
 }
 
-func (v *Vision) IsAgentDetected(currAgt world.Position, agt core.IAgent) bool {
-	return utils.GetDistance(currAgt, agt.Position()) <= v.visionRange
+func (v *Vision) IsAgentDetected(currAgt *world.Position, pos world.Position) bool {
+	return utils.GetDistance(*currAgt, pos) <= v.visionRange
 }
