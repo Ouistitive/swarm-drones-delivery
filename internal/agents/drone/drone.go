@@ -7,7 +7,6 @@ import (
 	"swarm-drones-delivery/internal/agents/behaviors"
 	"swarm-drones-delivery/internal/constants"
 	"swarm-drones-delivery/internal/core"
-	"swarm-drones-delivery/internal/utils"
 	"swarm-drones-delivery/internal/world"
 )
 
@@ -156,12 +155,12 @@ func (d *Drone) Deliberate() {
 	case StateMovingToDelivery:
 		if d.deliveryMission == nil || !d.deliveryMission.TargetDelivery.IsGrabbable() {
 			d.setDroneStateAndAction(StateFindingMission, ActionMove)
-		} else if d.deliveryMission.TargetDelivery != nil && utils.GetDistance(d.deliveryMission.TargetDelivery.Position(), d.pos) < 0.1 {
+		} else if d.deliveryMission.TargetDelivery != nil && d.isDroneNearTarget(constants.AGENT_CLOSE_DISTANCE) {
 			d.setDroneStateAndAction(StateGrabbing, ActionPick)
 		}
 	// Recharging
 	case StateMovingToRecharge:
-		if utils.GetDistance(d.targetPos, d.pos) < 0.1 {
+		if d.isDroneNearTarget(constants.AGENT_CLOSE_DISTANCE) {
 			d.setDroneStateAndAction(StateRecharging, ActionRecharge)
 		}
 	// Grab the delivery and prepare the next delivery destination
@@ -180,7 +179,7 @@ func (d *Drone) Deliberate() {
 		}
 	// Search random positions based, if the position is found, change the target position
 	case StateWandering:
-		if d.targetPos == world.NullPosition() || utils.GetDistance(d.targetPos, d.pos) < 2.0 {
+		if d.targetPos == world.NullPosition() || d.isDroneNearTarget(constants.AGENT_REGENERATION_RANDOM_POS_DISTANCE) {
 			d.targetPos = d.env.World().RandomPosition()
 		}
 
@@ -191,14 +190,14 @@ func (d *Drone) Deliberate() {
 		}
 	// Move to delivery position
 	case StateMovingToDestination:
-		if utils.GetDistance(d.targetPos, d.pos) < 0.1 {
+		if d.isDroneNearTarget(constants.AGENT_CLOSE_DISTANCE) {
 			d.setDroneStateAndAction(StateDelivering, ActionDeliver)
 		}
 	// Deliver the package at the destination and generate a new mission
 	case StateDelivering:
 		if d.deliveryMission == nil {
 			d.setDroneStateAndAction(StateFindingMission, ActionMove)
-		} else if utils.GetDistance(d.targetPos, d.pos) < 0.1 {
+		} else if d.isDroneNearTarget(constants.AGENT_CLOSE_DISTANCE) {
 			d.setDroneStateAndAction(StateDelivering, ActionDeliver)
 		}
 	}
