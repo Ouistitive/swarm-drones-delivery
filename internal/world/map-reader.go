@@ -5,24 +5,29 @@ import (
 	"strings"
 )
 
-func ReadMap(mapPath string) (*Map, error) {
+func ReadMap(mapPath, addrPath string) (*Map, error) {
 	content, err := os.ReadFile(mapPath)
 	if err != nil {
 		return nil, err
 	}
+	addr, err := ReadAddresses(addrPath)
+	if err != nil {
+		return nil, err
+	}
 
-	return loadMap(string(content)), nil
+	return loadWorld(string(content), addr), nil
 }
 
-func loadMap(content string) *Map {
+func loadWorld(content string, addr []Address) *Map {
 	lines := strings.Split(content, "\n")
 	cells := make([][]rune, 0)
 	rooftops := make([]Position, 0)
 	spawners := make([]Position, 0)
-	deliveryDestinations := make([]Position, 0)
+	deliveryDestinations := make([]DeliveryDestination, 0)
 	warehouses := make([]Position, 0)
 	chargingPoints := make([]ChargingPoint, 0)
 
+	addrIdx := 0
 	y := 0.0
 	for _, line := range lines {
 		row := []rune(line)
@@ -34,7 +39,8 @@ func loadMap(content string) *Map {
 			case 'S':
 				spawners = append(spawners, NewPosition(float64(x), y))
 			case 'D':
-				deliveryDestinations = append(deliveryDestinations, NewPosition(float64(x), y))
+				deliveryDestinations = append(deliveryDestinations, NewDeliveryDestination(NewPosition(float64(x), y), addr[addrIdx]))
+				addrIdx++
 			case 'W':
 				warehouses = append(warehouses, NewPosition(float64(x), y))
 			case 'C':
@@ -45,5 +51,5 @@ func loadMap(content string) *Map {
 		y++
 	}
 
-	return &Map{Width: len(lines[0]), Height: len(lines), Cells: cells, Rooftops: rooftops, Spawners: spawners, DeliveryDest: deliveryDestinations, Warehouses: warehouses, ChargingPoints: chargingPoints}
+	return &Map{Width: len(lines[0]), Height: len(lines), Cells: cells, Rooftops: rooftops, Spawners: spawners, DeliveryDests: deliveryDestinations, Warehouses: warehouses, ChargingPoints: chargingPoints}
 }

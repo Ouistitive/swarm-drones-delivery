@@ -73,10 +73,6 @@ func (g *Game) drawObjects(screen *ebiten.Image) {
 		currentPos := m.TargetDelivery.Position()
 		cObjX, cObjY := g.mapToDrawCoords(currentPos.X, currentPos.Y)
 		drawImageAt(screen, deliveryImg, cObjX, cObjY, MAGENTA)
-
-		targetPos := m.Destination
-		tObjX, tObjY := g.mapToDrawCoords(targetPos.X, targetPos.Y)
-		drawImageAt(screen, deliveryImg, tObjX, tObjY, RED)
 	}
 }
 

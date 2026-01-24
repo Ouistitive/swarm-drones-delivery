@@ -11,6 +11,7 @@ type Environment struct {
 	world         *world.Map
 	objects       []core.Delivery
 	missions      []core.DeliveryMission
+	destinations  []world.DeliveryDestination
 
 	deliveryMissionsChan chan core.DeliveryMissionsRequest
 	chargingMissionChan  chan core.ChargingMissionRequest
@@ -27,10 +28,16 @@ func NewEnvironment(w *world.Map) *Environment {
 		spawnChans = append(spawnChans, make(chan core.SpawnRequest))
 	}
 
+	var dests []world.DeliveryDestination
+	for _, d := range w.DeliveryDests {
+		dests = append(dests, d)
+	}
+
 	return &Environment{
 		agents:               make([]core.IAgent, 0),
 		spawnedAgents:        make([]core.IAgent, 0),
 		world:                w,
+		destinations: 		  dests,
 		objects:              make([]core.Delivery, 0),
 		deliveryMissionsChan: make(chan core.DeliveryMissionsRequest),
 		chargingMissionChan:  make(chan core.ChargingMissionRequest),
@@ -69,6 +76,10 @@ func (e *Environment) Agents() []core.IAgent {
 
 func (e *Environment) SpawnedAgents() []core.IAgent {
 	return e.spawnedAgents
+}
+
+func (e *Environment) Destinations() []world.DeliveryDestination {
+	return e.destinations
 }
 
 func (e *Environment) Missions() []core.DeliveryMission {

@@ -10,6 +10,7 @@ import (
 // loaded from .env using autoload
 var (
 	LAYOUT_PATH = os.Getenv("LAYOUT_PATH")
+	ADDRESSES_PATH = os.Getenv("ADDRESSES_PATH")
 	NB_AGENTS   = envInt("NB_AGENTS", 20)
 
 	AGENT_SPAWN_INTERVAL  = envInt("AGENT_SPAWN_INTERVAL", 150)
