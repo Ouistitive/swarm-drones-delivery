@@ -18,6 +18,7 @@ func NewDrone(env core.IEnvironment, agtId core.AgentID, pos world.Position, syn
 		vision:          behaviors.NewVision(constants.VISION_RANGE),
 		syncChan:        syncChan,
 		requests:        rqs,
+		inbox:			 make(chan Info, 10),
 		pos:             pos,
 		surroundingAgts: []core.AgentView{},
 		targetDir:       world.NullPosition(),
