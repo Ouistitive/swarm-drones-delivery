@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"sort"
 	"strings"
+	"swarm-drones-delivery/internal/utils"
 	"swarm-drones-delivery/internal/world"
 )
 
@@ -54,7 +55,7 @@ func (m *Memory) addAddressString() {
 
 	var b strings.Builder
 	for _, e := range entries {
-		fmt.Fprintf(&b, "\n - %s (%.0f,%.0f)", e.street, e.pos.X, e.pos.Y)
+		fmt.Fprintf(&b, "\n - %s (%s)", e.street, utils.PositionToString(e.pos))
 	}
 
 	m.addressesString = b.String()
