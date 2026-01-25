@@ -47,7 +47,7 @@ func NewEnvironment(w *world.Map) *Environment {
 		pickchan:             make(chan core.PickRequest, 50),
 		deliverChan:          make(chan core.DeliverRequest, 50),
 		spawnChans:           spawnChans,
-		perceptionChan:       make(chan core.PerceptionRequest, 0),
+		perceptionChan:       make(chan core.PerceptionRequest),
 	}
 }
 

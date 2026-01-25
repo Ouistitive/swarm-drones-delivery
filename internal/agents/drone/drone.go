@@ -84,7 +84,7 @@ func (d *Drone) TargetPos() world.Position {
 }
 
 func (d *Drone) GetDisplayData() string {
-	text := fmt.Sprintf("AgentID: %s\nState: %s\nAction: %s\nBattery: %d", d.id, d.state.String(), d.nextAction.String(), int(d.battery.Ratio()*100))
+	text := fmt.Sprintf("AgentID: %s\nState: %s\nAction: %s\nBattery: %d\nMemory: %s\nMission: ", d.id, d.state.String(), d.nextAction.String(), int(d.battery.Ratio()*100), d.memory.ToString())
 	return text
 }
 
