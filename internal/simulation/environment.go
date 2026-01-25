@@ -9,7 +9,7 @@ type Environment struct {
 	agents        []core.IAgent
 	spawnedAgents []core.IAgent
 	world         *world.Map
-	objects       []core.Delivery
+	objects       []core.Package
 	missions      []core.DeliveryMission
 	destinations  []world.DeliveryDestination
 
@@ -38,8 +38,8 @@ func NewEnvironment(w *world.Map) *Environment {
 		agents:               make([]core.IAgent, 0),
 		spawnedAgents:        make([]core.IAgent, 0),
 		world:                w,
-		destinations: 		  dests,
-		objects:              make([]core.Delivery, 0),
+		destinations:         dests,
+		objects:              make([]core.Package, 0),
 		deliveryMissionsChan: make(chan core.DeliveryMissionsRequest),
 		chargingMissionChan:  make(chan core.ChargingMissionRequest),
 		exitChargingChan:     make(chan core.ExitChargingRequest),
@@ -47,7 +47,7 @@ func NewEnvironment(w *world.Map) *Environment {
 		pickchan:             make(chan core.PickRequest, 50),
 		deliverChan:          make(chan core.DeliverRequest, 50),
 		spawnChans:           spawnChans,
-		perceptionChan:       make(chan core.PerceptionRequest, 0),
+		perceptionChan:       make(chan core.PerceptionRequest),
 	}
 }
 

@@ -16,7 +16,7 @@ func (d *Drone) getPerceptionData() core.PerceptionData {
 		Pos:             d.pos,
 		ResponseChannel: resp,
 	}
-	return <- resp
+	return <-resp
 }
 
 func (d *Drone) getMissions() *core.DeliveryMission {
@@ -50,7 +50,7 @@ func (d *Drone) grab() {
 	pickChanResponse := make(chan bool)
 	d.requests.PickChan <- core.PickRequest{
 		Agt:             d,
-		Deliv:           d.deliveryMission.TargetDelivery,
+		Deliv:           d.deliveryMission.TargetPackage,
 		ResponseChannel: pickChanResponse,
 	}
 	<-pickChanResponse
@@ -60,7 +60,7 @@ func (d *Drone) deliver() {
 	pickChanResponse := make(chan bool)
 	d.requests.DeliverChan <- core.DeliverRequest{
 		Agt:             d,
-		Deliv:           d.deliveryMission.TargetDelivery,
+		Deliv:           d.deliveryMission.TargetPackage,
 		ResponseChannel: pickChanResponse,
 	}
 

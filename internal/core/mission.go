@@ -1,25 +1,19 @@
 package core
 
 import (
+	"fmt"
+	"swarm-drones-delivery/internal/utils"
 	"swarm-drones-delivery/internal/world"
 
 	"github.com/google/uuid"
 )
 
-type MissionType int
-
-const (
-	MissionDelivery MissionType = iota
-	MissionRecharge
-)
-
 type DeliveryMission struct {
-	Id   uuid.UUID
-	Type MissionType
+	Id uuid.UUID
 
-	TargetDelivery *Delivery
-	Destination    world.Address
-	Ok             bool
+	TargetPackage *Package
+	Destination   world.Address
+	Ok            bool
 }
 
 type ChargingMission struct {
@@ -29,13 +23,19 @@ type ChargingMission struct {
 	Ok             bool
 }
 
-func NewDeliveryMission(uuid uuid.UUID, targetDel *Delivery, dest world.Address) *DeliveryMission {
+func NewDeliveryMission(uuid uuid.UUID, targetDel *Package, dest world.Address) *DeliveryMission {
 	return &DeliveryMission{
-		Id:             uuid,
-		Type:           MissionDelivery,
-		TargetDelivery: targetDel,
-		Destination:    dest,
+		Id:            uuid,
+		TargetPackage: targetDel,
+		Destination:   dest,
 	}
+}
+
+func (dm *DeliveryMission) ToString() string {
+	if dm.TargetPackage.Carrier == nil {
+		return fmt.Sprintf("Get package to (%s)", utils.PositionToString(dm.TargetPackage.pos))
+	}
+	return fmt.Sprintf("Delivery to %s", dm.Destination.Street)
 }
 
 func NewRechargeMission(uuid uuid.UUID, dest *world.ChargingPoint, ok bool) *ChargingMission {
@@ -44,4 +44,8 @@ func NewRechargeMission(uuid uuid.UUID, dest *world.ChargingPoint, ok bool) *Cha
 		TargetCharging: dest,
 		Ok:             ok,
 	}
+}
+
+func (cm *ChargingMission) ToString() string {
+	return fmt.Sprintf("Charging to (%s)", utils.PositionToString(cm.TargetCharging.Pos))
 }

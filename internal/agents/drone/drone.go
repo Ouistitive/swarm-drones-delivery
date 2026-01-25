@@ -84,7 +84,23 @@ func (d *Drone) TargetPos() world.Position {
 }
 
 func (d *Drone) GetDisplayData() string {
-	text := fmt.Sprintf("AgentID: %s\nState: %s\nAction: %s\nBattery: %d", d.id, d.state.String(), d.nextAction.String(), int(d.battery.Ratio()*100))
+	mission := "None"
+	if d.deliveryMission != nil {
+		mission = d.deliveryMission.ToString()
+	} else if d.chargingMission != nil {
+		mission = d.chargingMission.ToString()
+	}
+
+	text := fmt.Sprintf(
+		"AgentID: %s\nState: %s\nAction: %s\nBattery: %d%%\nMemory: %s\nMission: %s",
+		d.id,
+		d.state.String(),
+		d.nextAction.String(),
+		int(d.battery.Ratio()*100),
+		d.memory.ToString(),
+		mission,
+	)
+
 	return text
 }
 
@@ -144,16 +160,16 @@ func (d *Drone) Deliberate() {
 
 			// If cannot recharge, go deliver a new delivery
 			d.deliveryMission = d.getMissions()
-			if d.chargingMission == nil && d.deliveryMission != nil && d.deliveryMission.TargetDelivery != nil {
-				d.targetPos = d.deliveryMission.TargetDelivery.Position()
+			if d.chargingMission == nil && d.deliveryMission != nil && d.deliveryMission.TargetPackage != nil {
+				d.targetPos = d.deliveryMission.TargetPackage.Position()
 				d.setDroneStateAndAction(StateMovingToDelivery, ActionMove)
 			}
 		}
 	// Move to a delivery target and grab it if it can
 	case StateMovingToDelivery:
-		if d.deliveryMission == nil || !d.deliveryMission.TargetDelivery.IsGrabbable() {
+		if d.deliveryMission == nil || !d.deliveryMission.TargetPackage.IsGrabbable() {
 			d.setDroneStateAndAction(StateFindingMission, ActionMove)
-		} else if d.deliveryMission.TargetDelivery != nil && d.isDroneNearTarget(constants.AGENT_CLOSE_DISTANCE) {
+		} else if d.deliveryMission.TargetPackage != nil && d.isDroneNearTarget(constants.AGENT_CLOSE_DISTANCE) {
 			d.setDroneStateAndAction(StateGrabbing, ActionPick)
 		}
 	// Recharging
@@ -163,7 +179,7 @@ func (d *Drone) Deliberate() {
 		}
 	// Grab the delivery and prepare the next delivery destination
 	case StateGrabbing:
-		if d.deliveryMission.TargetDelivery.Carrier == d {
+		if d.deliveryMission.TargetPackage.Carrier == d {
 			destPos, exists := d.memory.KnowAddress(&d.deliveryMission.Destination)
 			if exists {
 				d.targetPos = destPos

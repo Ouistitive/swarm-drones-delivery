@@ -70,19 +70,19 @@ func (g *Game) drawHUD(screen *ebiten.Image) {
 func (g *Game) drawObjects(screen *ebiten.Image) {
 	missions := g.Sim.Env.Missions()
 	for _, m := range missions {
-		currentPos := m.TargetDelivery.Position()
+		currentPos := m.TargetPackage.Position()
 		cObjX, cObjY := g.mapToDrawCoords(currentPos.X, currentPos.Y)
-		drawImageAt(screen, deliveryImg, cObjX, cObjY, MAGENTA)
+		drawImageAt(screen, packageImg, cObjX, cObjY, MAGENTA)
 	}
 }
 
 func (g *Game) drawAgents(screen *ebiten.Image) {
 	g.forEachSpawnedAgents(func(agt core.IAgent) {
 		// If the drone is transporting a delivery, draw the delivery
-		if drone, ok := agt.(*drone.Drone); ok && drone.Mission() != nil && drone.Mission().TargetDelivery != nil {
-			pos := drone.Mission().TargetDelivery.Position()
+		if drone, ok := agt.(*drone.Drone); ok && drone.Mission() != nil && drone.Mission().TargetPackage != nil {
+			pos := drone.Mission().TargetPackage.Position()
 			objX, objY := g.mapToDrawCoords(pos.X, pos.Y)
-			drawImageAt(screen, deliveryImg, objX, objY, MAGENTA)
+			drawImageAt(screen, packageImg, objX, objY, MAGENTA)
 		}
 
 		agtX, agtY := g.mapToDrawCoords(agt.Position().X, agt.Position().Y)

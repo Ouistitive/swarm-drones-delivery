@@ -4,38 +4,38 @@ import (
 	"swarm-drones-delivery/internal/world"
 )
 
-type DeliveryState int
+type PackageState int
 
 const (
-	FREE DeliveryState = iota
+	FREE PackageState = iota
 	GRABBED
 	DELIVERED
 )
 
-type Delivery struct {
+type Package struct {
 	pos     world.Position
-	State   DeliveryState
+	State   PackageState
 	Carrier IAgent
 }
 
-func NewDelivery(pos world.Position) *Delivery {
-	return &Delivery{
+func NewDelivery(pos world.Position) *Package {
+	return &Package{
 		pos:   pos,
 		State: FREE,
 	}
 }
 
-func (d *Delivery) SetPosition(newPos world.Position) {
+func (d *Package) SetPosition(newPos world.Position) {
 	d.pos = newPos
 }
 
-func (d *Delivery) Position() world.Position {
+func (d *Package) Position() world.Position {
 	if d.Carrier != nil && d.State == GRABBED {
 		return d.Carrier.Position()
 	}
 	return d.pos
 }
 
-func (d *Delivery) IsGrabbable() bool {
+func (d *Package) IsGrabbable() bool {
 	return d.State == FREE
 }
