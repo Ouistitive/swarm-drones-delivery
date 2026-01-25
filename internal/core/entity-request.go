@@ -29,13 +29,13 @@ type SpawnRequest struct {
 
 type PickRequest struct {
 	Agt             IAgent
-	Deliv           *Delivery
+	Deliv           *Package
 	ResponseChannel chan bool
 }
 
 type DeliverRequest struct {
 	Agt             IAgent
-	Deliv           *Delivery
+	Deliv           *Package
 	ResponseChannel chan bool
 }
 
@@ -52,7 +52,7 @@ type ChannelRequests struct {
 	PickChan             chan PickRequest
 	DeliverChan          chan DeliverRequest
 	SpawnChan            chan SpawnRequest
-	PerceptionChan 		 chan PerceptionRequest
+	PerceptionChan       chan PerceptionRequest
 }
 
 func NewChannelRequests(
@@ -73,6 +73,6 @@ func NewChannelRequests(
 		PickChan:             pickChan,
 		DeliverChan:          deliverChan,
 		SpawnChan:            spawnChan,
-		PerceptionChan: 	  perceptionChan,
+		PerceptionChan:       perceptionChan,
 	}
 }

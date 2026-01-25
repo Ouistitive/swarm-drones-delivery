@@ -160,16 +160,16 @@ func (d *Drone) Deliberate() {
 
 			// If cannot recharge, go deliver a new delivery
 			d.deliveryMission = d.getMissions()
-			if d.chargingMission == nil && d.deliveryMission != nil && d.deliveryMission.TargetDelivery != nil {
-				d.targetPos = d.deliveryMission.TargetDelivery.Position()
+			if d.chargingMission == nil && d.deliveryMission != nil && d.deliveryMission.TargetPackage != nil {
+				d.targetPos = d.deliveryMission.TargetPackage.Position()
 				d.setDroneStateAndAction(StateMovingToDelivery, ActionMove)
 			}
 		}
 	// Move to a delivery target and grab it if it can
 	case StateMovingToDelivery:
-		if d.deliveryMission == nil || !d.deliveryMission.TargetDelivery.IsGrabbable() {
+		if d.deliveryMission == nil || !d.deliveryMission.TargetPackage.IsGrabbable() {
 			d.setDroneStateAndAction(StateFindingMission, ActionMove)
-		} else if d.deliveryMission.TargetDelivery != nil && d.isDroneNearTarget(constants.AGENT_CLOSE_DISTANCE) {
+		} else if d.deliveryMission.TargetPackage != nil && d.isDroneNearTarget(constants.AGENT_CLOSE_DISTANCE) {
 			d.setDroneStateAndAction(StateGrabbing, ActionPick)
 		}
 	// Recharging
@@ -179,7 +179,7 @@ func (d *Drone) Deliberate() {
 		}
 	// Grab the delivery and prepare the next delivery destination
 	case StateGrabbing:
-		if d.deliveryMission.TargetDelivery.Carrier == d {
+		if d.deliveryMission.TargetPackage.Carrier == d {
 			destPos, exists := d.memory.KnowAddress(&d.deliveryMission.Destination)
 			if exists {
 				d.targetPos = destPos

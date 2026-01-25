@@ -9,11 +9,11 @@ import (
 )
 
 type DeliveryMission struct {
-	Id   uuid.UUID
+	Id uuid.UUID
 
-	TargetDelivery *Delivery
-	Destination    world.Address
-	Ok             bool
+	TargetPackage *Package
+	Destination   world.Address
+	Ok            bool
 }
 
 type ChargingMission struct {
@@ -23,17 +23,17 @@ type ChargingMission struct {
 	Ok             bool
 }
 
-func NewDeliveryMission(uuid uuid.UUID, targetDel *Delivery, dest world.Address) *DeliveryMission {
+func NewDeliveryMission(uuid uuid.UUID, targetDel *Package, dest world.Address) *DeliveryMission {
 	return &DeliveryMission{
-		Id:             uuid,
-		TargetDelivery: targetDel,
-		Destination:    dest,
+		Id:            uuid,
+		TargetPackage: targetDel,
+		Destination:   dest,
 	}
 }
 
 func (dm *DeliveryMission) ToString() string {
-	if dm.TargetDelivery.Carrier == nil {
-		return fmt.Sprintf("Get package to (%s)", utils.PositionToString(dm.TargetDelivery.pos))
+	if dm.TargetPackage.Carrier == nil {
+		return fmt.Sprintf("Get package to (%s)", utils.PositionToString(dm.TargetPackage.pos))
 	}
 	return fmt.Sprintf("Delivery to %s", dm.Destination.Street)
 }

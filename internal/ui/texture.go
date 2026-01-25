@@ -13,11 +13,11 @@ import (
 )
 
 var (
-	groundImg   	*ebiten.Image
-	droneImg    	*ebiten.Image
-	deliveryImg 	*ebiten.Image
-	targetImg   	*ebiten.Image
-	visionCircle 	*ebiten.Image
+	groundImg    *ebiten.Image
+	droneImg     *ebiten.Image
+	packageImg   *ebiten.Image
+	targetImg    *ebiten.Image
+	visionCircle *ebiten.Image
 )
 
 func init() {
@@ -33,9 +33,9 @@ func init() {
 		log.Printf("Warning: Could not load drone.png: %v", err)
 	}
 
-	deliveryImg, _, err = ebitenutil.NewImageFromFile("assets/delivery.png")
+	packageImg, _, err = ebitenutil.NewImageFromFile("assets/package.png")
 	if err != nil {
-		log.Printf("Warning: Could not load delivery.png: %v", err)
+		log.Printf("Warning: Could not load package.png: %v", err)
 	}
 
 	targetImg, _, err = ebitenutil.NewImageFromFile("assets/target.png")
