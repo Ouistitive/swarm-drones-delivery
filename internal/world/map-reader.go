@@ -40,7 +40,7 @@ func loadWorld(content string, addr []Address) *Map {
 				spawners = append(spawners, NewPosition(float64(x), y))
 			case 'D':
 				deliveryDestinations = append(deliveryDestinations, NewDeliveryDestination(NewPosition(float64(x), y), addr[addrIdx]))
-				addrIdx++
+				// addrIdx++
 			case 'W':
 				warehouses = append(warehouses, NewPosition(float64(x), y))
 			case 'C':

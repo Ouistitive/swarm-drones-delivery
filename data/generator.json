@@ -1,0 +1,38 @@
+{
+    "ChargingPoint": {
+        "left": {"ChargingPoint":0.1, "Empty":0.3, "Rooftop":0.4, "Spawner":0.05, "Warehouse":0.15},
+        "right":{"ChargingPoint":0.1, "Empty":0.3, "Rooftop":0.4, "Spawner":0.05, "Warehouse":0.15},
+        "up":   {"ChargingPoint":0.1, "Empty":0.3, "Rooftop":0.4, "Spawner":0.05, "Warehouse":0.15},
+        "down": {"ChargingPoint":0.1, "Empty":0.3, "Rooftop":0.4, "Spawner":0.05, "Warehouse":0.15}
+    },
+    "Empty": {
+        "left": {"ChargingPoint":0.1, "Empty":0.4, "Rooftop":0.4, "Spawner":0.05, "Warehouse":0.05},
+        "right":{"ChargingPoint":0.1, "Empty":0.4, "Rooftop":0.4, "Spawner":0.05, "Warehouse":0.05},
+        "up":   {"ChargingPoint":0.1, "Empty":0.4, "Rooftop":0.4, "Spawner":0.05, "Warehouse":0.05},
+        "down": {"ChargingPoint":0.1, "Empty":0.4, "Rooftop":0.4, "Spawner":0.05, "Warehouse":0.05}
+    },
+    "Destination": {
+        "left": {"Empty":0.6, "Rooftop":0.3, "Warehouse":0.1},
+        "right":{"Empty":0.6, "Rooftop":0.3, "Warehouse":0.1},
+        "up":   {"Empty":0.6, "Rooftop":0.3, "Warehouse":0.1},
+        "down": {"Empty":0.6, "Rooftop":0.3, "Warehouse":0.1}
+    },
+    "Rooftop": {
+        "left": {"Empty":0.4, "Rooftop":0.5, "ChargingPoint":0.05, "Destination":0.05, "Warehouse":0.05},
+        "right":{"Empty":0.4, "Rooftop":0.5, "ChargingPoint":0.05, "Destination":0.05, "Warehouse":0.05},
+        "up":   {"Empty":0.4, "Rooftop":0.5, "ChargingPoint":0.05, "Destination":0.05, "Warehouse":0.05},
+        "down": {"Empty":0.4, "Rooftop":0.5, "ChargingPoint":0.05, "Destination":0.05, "Warehouse":0.05}
+    },
+    "Spawner": {
+        "left": {"Empty":0.5, "Rooftop":0.4, "ChargingPoint":0.05, "Warehouse":0.05},
+        "right":{"Empty":0.5, "Rooftop":0.4, "ChargingPoint":0.05, "Warehouse":0.05},
+        "up":   {"Empty":0.5, "Rooftop":0.4, "ChargingPoint":0.05, "Warehouse":0.05},
+        "down": {"Empty":0.5, "Rooftop":0.4, "ChargingPoint":0.05, "Warehouse":0.05}
+    },
+    "Warehouse": {
+        "left": {"Empty":0.4, "Rooftop":0.4, "ChargingPoint":0.15, "Warehouse":0.05},
+        "right":{"Empty":0.4, "Rooftop":0.4, "ChargingPoint":0.15, "Warehouse":0.05},
+        "up":   {"Empty":0.4, "Rooftop":0.4, "ChargingPoint":0.15, "Warehouse":0.05},
+        "down": {"Empty":0.4, "Rooftop":0.4, "ChargingPoint":0.15, "Warehouse":0.05}
+    }
+}

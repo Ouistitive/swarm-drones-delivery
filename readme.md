@@ -4,6 +4,7 @@
 
 You can easily use your own map, using those characters:
 - B: Bounds of the map, is used to limit with a rectangle the map.
+- C: Charging point, a place to recharge to drone when it has critical battery
 - D: Destination of a package. Where a package can be delivered.
 - R: Rooftops of the building, is used only for styling purpose
 - S: Spawners for drones. Where the drones can spawn.
