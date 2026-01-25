@@ -10,6 +10,29 @@ import (
 	"github.com/google/uuid"
 )
 
+func (e *Environment) perceptionRequest() {
+	for perceptionRequest := range e.perceptionChan {
+		data := core.PerceptionData{
+			Agents: make([]core.AgentView, 0),
+			Destinations: make([]world.DeliveryDestination, 0),
+		}
+
+		for _, a := range e.spawnedAgents {
+			if utils.GetDistance(a.Position(), perceptionRequest.Pos) <= constants.VISION_RANGE * 2 {
+				data.Agents = append(data.Agents, core.NewAgentView(a.ID(), a.Position()))
+			}
+		}
+		
+		for _, d := range e.destinations {
+			if utils.GetDistance(d.Pos, perceptionRequest.Pos) <= constants.VISION_RANGE * 2 {
+				data.Destinations = append(data.Destinations, d)
+			}
+		}
+
+		perceptionRequest.ResponseChannel <- data
+	}
+}
+
 func (e *Environment) deliveryMissionsRequest() {
 	for missionRequest := range e.deliveryMissionsChan {
 		cp := make([]core.DeliveryMission, len(e.missions))

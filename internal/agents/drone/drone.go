@@ -41,7 +41,7 @@ type Drone struct {
 	hasSpawned bool
 
 	vision          behaviors.Vision
-	surroundingAgts []core.IAgent
+	surroundingAgts []core.AgentView
 
 	syncChan chan int
 	requests core.ChannelRequests
@@ -67,7 +67,7 @@ func (d *Drone) Spawned() bool {
 	return d.hasSpawned
 }
 
-func (d *Drone) SurroundingAgents() []core.IAgent {
+func (d *Drone) SurroundingAgents() []core.AgentView {
 	return d.surroundingAgts
 }
 
@@ -111,18 +111,16 @@ func (d *Drone) Start() {
 }
 
 func (d *Drone) Percept() {
-	agts := d.env.SpawnedAgents()
+	data := d.getPerceptionData()
 	d.surroundingAgts = d.surroundingAgts[:0]
-
-	for _, a := range agts {
-		if d.vision.IsAgentDetected(&d.pos, a.Position()) {
+	for _, a := range data.Agents {
+		if d.vision.IsAgentDetected(&d.pos, &a.Pos) {
 			d.surroundingAgts = append(d.surroundingAgts, a)
 		}
 	}
 
-	dests := d.env.Destinations()
-	for _, de := range dests {
-		if d.vision.IsAgentDetected(&d.pos, de.Pos) {
+	for _, de := range data.Destinations {
+		if d.vision.IsAgentDetected(&d.pos, &de.Pos) {
 			d.memory.AddAddress(&de.Address, &de.Pos)
 		}
 	}
@@ -145,7 +143,7 @@ func (d *Drone) Deliberate() {
 			}
 
 			// If cannot recharge, go deliver a new delivery
-			d.generateTargetPosition()
+			d.deliveryMission = d.getMissions()
 			if d.chargingMission == nil && d.deliveryMission != nil && d.deliveryMission.TargetDelivery != nil {
 				d.targetPos = d.deliveryMission.TargetDelivery.Position()
 				d.setDroneStateAndAction(StateMovingToDelivery, ActionMove)

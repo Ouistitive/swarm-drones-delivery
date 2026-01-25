@@ -15,6 +15,6 @@ func NewVision(visionRange float64) Vision {
 	}
 }
 
-func (v *Vision) IsAgentDetected(currAgt *world.Position, pos world.Position) bool {
-	return utils.GetDistance(*currAgt, pos) <= v.visionRange
+func (v *Vision) IsAgentDetected(currAgt *world.Position, pos *world.Position) bool {
+	return utils.GetDistance(*currAgt, *pos) <= v.visionRange
 }

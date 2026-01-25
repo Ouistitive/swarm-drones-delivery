@@ -39,6 +39,11 @@ type DeliverRequest struct {
 	ResponseChannel chan bool
 }
 
+type PerceptionRequest struct {
+	Pos             world.Position
+	ResponseChannel chan PerceptionData
+}
+
 type ChannelRequests struct {
 	DeliveryMissionsChan chan DeliveryMissionsRequest
 	ChargingMissionChan  chan ChargingMissionRequest
@@ -47,6 +52,7 @@ type ChannelRequests struct {
 	PickChan             chan PickRequest
 	DeliverChan          chan DeliverRequest
 	SpawnChan            chan SpawnRequest
+	PerceptionChan 		 chan PerceptionRequest
 }
 
 func NewChannelRequests(
@@ -57,6 +63,7 @@ func NewChannelRequests(
 	pickChan chan PickRequest,
 	deliverChan chan DeliverRequest,
 	spawnChan chan SpawnRequest,
+	perceptionChan chan PerceptionRequest,
 ) ChannelRequests {
 	return ChannelRequests{
 		DeliveryMissionsChan: deliveryMissionsChan,
@@ -66,5 +73,6 @@ func NewChannelRequests(
 		PickChan:             pickChan,
 		DeliverChan:          deliverChan,
 		SpawnChan:            spawnChan,
+		PerceptionChan: 	  perceptionChan,
 	}
 }

@@ -94,7 +94,7 @@ func (g *Game) drawLinesBetweenAgents(screen *ebiten.Image) {
 	g.forEachSpawnedAgents(func(agt core.IAgent) {
 		drawX, drawY := g.mapToDrawCoordsCentered(agt.Position().X, agt.Position().Y)
 		for _, surrAgt := range agt.SurroundingAgents() {
-			surrAgtX, surrAgtY := g.mapToDrawCoordsCentered(surrAgt.Position().X, surrAgt.Position().Y)
+			surrAgtX, surrAgtY := g.mapToDrawCoordsCentered(surrAgt.Pos.X, surrAgt.Pos.Y)
 			vector.StrokeLine(screen, float32(drawX), float32(drawY), float32(surrAgtX), float32(surrAgtY), 2, color.RGBA{0, 100, 255, 255}, false)
 		}
 	})
