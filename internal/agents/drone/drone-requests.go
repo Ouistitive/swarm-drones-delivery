@@ -10,14 +10,23 @@ func (d *Drone) setDroneStateAndAction(state AgentState, act ActionType) {
 	d.nextAction = act
 }
 
-func (d *Drone) getMissions() {
+func (d *Drone) getPerceptionData() core.PerceptionData {
+	resp := make(chan core.PerceptionData)
+	d.requests.PerceptionChan <- core.PerceptionRequest{
+		Pos:             d.pos,
+		ResponseChannel: resp,
+	}
+	return <- resp
+}
+
+func (d *Drone) getMissions() *core.DeliveryMission {
 	missionsChanResponse := make(chan []core.DeliveryMission)
 	d.requests.DeliveryMissionsChan <- core.DeliveryMissionsRequest{ResponseChannel: missionsChanResponse}
 	m := <-missionsChanResponse
 	if len(m) == 0 {
-		d.deliveryMission = nil
+		return nil
 	} else {
-		d.deliveryMission = &m[rand.Intn(len(m))]
+		return &m[rand.Intn(len(m))]
 	}
 }
 

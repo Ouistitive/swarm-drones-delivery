@@ -19,6 +19,7 @@ type Environment struct {
 	moveChan             chan core.MoveRequest
 	pickchan             chan core.PickRequest
 	deliverChan          chan core.DeliverRequest
+	perceptionChan       chan core.PerceptionRequest
 	spawnChans           []chan core.SpawnRequest
 }
 
@@ -46,6 +47,7 @@ func NewEnvironment(w *world.Map) *Environment {
 		pickchan:             make(chan core.PickRequest, 50),
 		deliverChan:          make(chan core.DeliverRequest, 50),
 		spawnChans:           spawnChans,
+		perceptionChan:       make(chan core.PerceptionRequest, 0),
 	}
 }
 
@@ -53,6 +55,7 @@ func (e *Environment) Start() {
 	go e.spawnRequest()
 	go e.moveRequest()
 	go e.pickRequest()
+	go e.perceptionRequest()
 	go e.deliverRequest()
 	go e.deliveryMissionsRequest()
 	go e.chargingMissionRequest()
@@ -62,7 +65,7 @@ func (e *Environment) Start() {
 
 func (e *Environment) AddAgent(factory core.AgentFactory) {
 	randomPos, idx := e.world.RandomSpawner()
-	chanRqs := core.NewChannelRequests(e.deliveryMissionsChan, e.chargingMissionChan, e.exitChargingChan, e.moveChan, e.pickchan, e.deliverChan, e.spawnChans[idx])
+	chanRqs := core.NewChannelRequests(e.deliveryMissionsChan, e.chargingMissionChan, e.exitChargingChan, e.moveChan, e.pickchan, e.deliverChan, e.spawnChans[idx], e.perceptionChan)
 	e.agents = append(e.agents, factory(randomPos, chanRqs))
 }
 

@@ -4,6 +4,18 @@ import "swarm-drones-delivery/internal/world"
 
 type AgentID string
 
+type AgentView struct {
+	ID  AgentID
+	Pos world.Position
+}
+
+func NewAgentView(id AgentID, pos world.Position) AgentView {
+	return AgentView{
+		ID: 	id,
+		Pos: 	pos,
+	}
+}
+
 type IAgent interface {
 	ClickableEntity
 
@@ -19,7 +31,7 @@ type IAgent interface {
 	Mission() *DeliveryMission
 	TargetPos() world.Position
 
-	SurroundingAgents() []IAgent
+	SurroundingAgents() []AgentView
 }
 
 type AgentFactory func(pos world.Position, chanReqs ChannelRequests) IAgent

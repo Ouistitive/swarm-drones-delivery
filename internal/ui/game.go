@@ -71,7 +71,7 @@ func (g *Game) buildGroundCache() {
 
 	for _, delDest := range envMap.DeliveryDests {
 		drawX, drawY := g.mapToDrawCoords(delDest.Pos.X, delDest.Pos.Y)
-		drawImageAt(g.deliveryDestLayer, groundImg, drawX, drawY, YELLOW)
+		drawImageAt(g.deliveryDestLayer, groundImg, drawX, drawY, MAGENTA)
 	}
 
 	for _, chargingPtn := range envMap.ChargingPoints {

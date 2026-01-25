@@ -19,7 +19,7 @@ func NewDrone(env core.IEnvironment, agtId core.AgentID, pos world.Position, syn
 		syncChan:        syncChan,
 		requests:        rqs,
 		pos:             pos,
-		surroundingAgts: []core.IAgent{},
+		surroundingAgts: []core.AgentView{},
 		targetDir:       world.NullPosition(),
 		currentDir:      world.NullPosition(),
 		velocity:        0.0,
