@@ -4,7 +4,6 @@ import (
 	"swarm-drones-delivery/internal/world"
 )
 
-type Info struct {
-	Addresses world.DeliveryDestination
+type DroneSharedData struct {
+	Addresses []world.DeliveryDestination
 }
-
