@@ -9,15 +9,15 @@ import (
 	"swarm-drones-delivery/internal/world"
 )
 
-func NewDrone(env core.IEnvironment, agtId core.AgentID, pos world.Position, syncChan chan int, rqs core.ChannelRequests) *Drone {
+func NewDrone(agtId core.AgentID, worldBoundaries, pos world.Position, syncChan chan int, rqs core.ChannelRequests) *Drone {
 	return &Drone{
 		t:               time.Now(),
-		env:             env,
 		id:              agtId,
 		hasSpawned:      false,
-		vision:          behaviors.NewVision(constants.VISION_RANGE),
+		vision:          behaviors.NewVision(constants.VISION_RANGE, worldBoundaries.X, worldBoundaries.Y),
 		syncChan:        syncChan,
 		requests:        rqs,
+		inbox:           make(chan DroneSharedData, 10),
 		pos:             pos,
 		surroundingAgts: []core.AgentView{},
 		targetDir:       world.NullPosition(),
@@ -30,14 +30,14 @@ func NewDrone(env core.IEnvironment, agtId core.AgentID, pos world.Position, syn
 }
 
 func DroneFactory(
-	env core.IEnvironment,
 	agtId core.AgentID,
 	syncChan chan int,
+	worldBoundaries world.Position,
 ) core.AgentFactory {
 	return func(pos world.Position, chanReqs core.ChannelRequests) core.IAgent {
 		return NewDrone(
-			env,
 			agtId,
+			worldBoundaries,
 			pos,
 			syncChan,
 			chanReqs,

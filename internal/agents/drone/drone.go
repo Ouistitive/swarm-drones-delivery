@@ -2,6 +2,7 @@ package drone
 
 import (
 	"fmt"
+	"math/rand"
 	"time"
 
 	"swarm-drones-delivery/internal/agents/behaviors"
@@ -37,7 +38,6 @@ const (
 
 type Drone struct {
 	id         core.AgentID
-	env        core.IEnvironment
 	hasSpawned bool
 
 	vision          behaviors.Vision
@@ -45,6 +45,7 @@ type Drone struct {
 
 	syncChan chan int
 	requests core.ChannelRequests
+	inbox    chan DroneSharedData
 
 	pos        world.Position
 	targetPos  world.Position // What the drone is trying to go in a current state
@@ -120,6 +121,7 @@ func (d *Drone) Start() {
 	for {
 		step := <-d.syncChan
 		d.Percept()
+		d.ProcessInbox()
 		d.Deliberate()
 		d.Act()
 		d.syncChan <- step + 1
@@ -138,6 +140,19 @@ func (d *Drone) Percept() {
 	for _, de := range data.Destinations {
 		if d.vision.IsAgentDetected(&d.pos, &de.Pos) {
 			d.memory.AddAddress(&de.Address, &de.Pos)
+		}
+	}
+}
+
+func (d *Drone) ProcessInbox() {
+	for {
+		select {
+		case msg := <- d.inbox:
+			for _, addr := range msg.Addresses {
+				d.memory.AddAddress(&addr.Address, &addr.Pos)
+			}
+		default:
+			return
 		}
 	}
 }
@@ -194,7 +209,7 @@ func (d *Drone) Deliberate() {
 	// Search random positions based, if the position is found, change the target position
 	case StateWandering:
 		if d.targetPos == world.NullPosition() || d.isDroneNearTarget(constants.AGENT_REGENERATION_RANDOM_POS_DISTANCE) {
-			d.targetPos = d.env.World().RandomPosition()
+			d.targetPos = world.NewPosition(rand.Float64()*d.vision.WorldBoundaries.X, rand.Float64()*d.vision.WorldBoundaries.Y)
 		}
 
 		p, e := d.memory.KnowAddress(&d.deliveryMission.Destination)
