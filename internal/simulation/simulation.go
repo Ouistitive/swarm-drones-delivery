@@ -28,7 +28,7 @@ func NewSimulation(m *world.Map) *Simulation {
 		agtId := core.AgentID(fmt.Sprintf("Agent_%d", i))
 		syncChan := make(chan int)
 		sim.syncChans.Store(agtId, syncChan)
-		agtFactory := drone.DroneFactory(sim.Env, agtId, syncChan)
+		agtFactory := drone.DroneFactory(agtId, syncChan, world.NewPosition(float64(m.Width), float64(m.Height)))
 		sim.Env.AddAgent(agtFactory)
 	}
 

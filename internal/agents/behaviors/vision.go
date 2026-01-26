@@ -6,12 +6,14 @@ import (
 )
 
 type Vision struct {
-	visionRange float64
+	WorldBoundaries world.Position
+	visionRange 	float64
 }
 
-func NewVision(visionRange float64) Vision {
+func NewVision(visionRange float64, w, h float64) Vision {
 	return Vision{
-		visionRange: visionRange,
+		visionRange: 		visionRange,
+		WorldBoundaries: 	world.NewPosition(w, h),
 	}
 }
 

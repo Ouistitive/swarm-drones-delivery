@@ -2,6 +2,7 @@ package drone
 
 import (
 	"fmt"
+	"math/rand"
 	"time"
 
 	"swarm-drones-delivery/internal/agents/behaviors"
@@ -37,7 +38,6 @@ const (
 
 type Drone struct {
 	id         core.AgentID
-	env        core.IEnvironment
 	hasSpawned bool
 
 	vision          behaviors.Vision
@@ -195,7 +195,7 @@ func (d *Drone) Deliberate() {
 	// Search random positions based, if the position is found, change the target position
 	case StateWandering:
 		if d.targetPos == world.NullPosition() || d.isDroneNearTarget(constants.AGENT_REGENERATION_RANDOM_POS_DISTANCE) {
-			d.targetPos = d.env.World().RandomPosition()
+			d.targetPos = world.NewPosition(rand.Float64() * d.vision.WorldBoundaries.X, rand.Float64() * d.vision.WorldBoundaries.Y)
 		}
 
 		p, e := d.memory.KnowAddress(&d.deliveryMission.Destination)
