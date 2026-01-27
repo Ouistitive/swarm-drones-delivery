@@ -56,10 +56,12 @@ type Drone struct {
 	state      AgentState
 	nextAction ActionType
 
-	deliveryMission *core.DeliveryMission
-	chargingMission *core.ChargingMission
-	battery         behaviors.Battery
-	memory          behaviors.Memory
+	scoredMissions 		[]ScoredMission
+	allDeliveryMissions	[]core.DeliveryMission
+	deliveryMission 	*core.DeliveryMission
+	chargingMission 	*core.ChargingMission
+	battery         	behaviors.Battery
+	memory          	behaviors.Memory
 
 	t time.Time
 }
@@ -130,7 +132,9 @@ func (d *Drone) Start() {
 
 func (d *Drone) Percept() {
 	data := d.getPerceptionData()
+	d.allDeliveryMissions = data.Missions
 	d.surroundingAgts = d.surroundingAgts[:0]
+
 	for _, a := range data.Agents {
 		if d.vision.IsAgentDetected(&d.pos, &a.Pos) {
 			d.surroundingAgts = append(d.surroundingAgts, a)
@@ -162,6 +166,7 @@ func (d *Drone) Deliberate() {
 	// Generate the next mission to do (recharging or delivering)
 	case StateFindingMission:
 		if time.Since(d.t) >= time.Second || d.deliveryMission == nil {
+			d.orderBestPackages()
 			d.t = time.Now()
 			// Try to find a recharge the drone
 			if d.battery.Ratio() < constants.BATTERY_EMERGENCY_RATIO && d.state != StateRecharging {
@@ -174,7 +179,11 @@ func (d *Drone) Deliberate() {
 			}
 
 			// If cannot recharge, go deliver a new delivery
-			d.deliveryMission = d.getMissions()
+			if len(d.allDeliveryMissions) > 0 {
+				d.deliveryMission = &d.allDeliveryMissions[0]
+			} else {
+				d.deliveryMission = nil
+			}
 			if d.chargingMission == nil && d.deliveryMission != nil && d.deliveryMission.TargetPackage != nil {
 				d.targetPos = d.deliveryMission.TargetPackage.Position()
 				d.setDroneStateAndAction(StateMovingToDelivery, ActionMove)

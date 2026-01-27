@@ -7,4 +7,5 @@ import (
 type PerceptionData struct {
 	Agents       []AgentView
 	Destinations []world.DeliveryDestination
+	Missions 	 []DeliveryMission
 }

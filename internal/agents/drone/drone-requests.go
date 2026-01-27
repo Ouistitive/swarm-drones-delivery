@@ -1,7 +1,6 @@
 package drone
 
 import (
-	"math/rand"
 	"swarm-drones-delivery/internal/core"
 )
 
@@ -17,17 +16,6 @@ func (d *Drone) getPerceptionData() core.PerceptionData {
 		ResponseChannel: resp,
 	}
 	return <-resp
-}
-
-func (d *Drone) getMissions() *core.DeliveryMission {
-	missionsChanResponse := make(chan []core.DeliveryMission)
-	d.requests.DeliveryMissionsChan <- core.DeliveryMissionsRequest{ResponseChannel: missionsChanResponse}
-	m := <-missionsChanResponse
-	if len(m) == 0 {
-		return nil
-	} else {
-		return &m[rand.Intn(len(m))]
-	}
 }
 
 func (d *Drone) getNearestChargingPoint() *core.ChargingMission {
