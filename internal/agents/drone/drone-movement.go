@@ -34,10 +34,6 @@ func (d *Drone) Move() {
 	d.pos.Y += d.currentDir.Y * d.velocity
 }
 
-func (d *Drone) generateTargetPosition() {
-	d.getMissions()
-}
-
 func (d *Drone) adjustVelocity(distance float64) {
 	targetVelocity := constants.MAX_VELOCITY
 

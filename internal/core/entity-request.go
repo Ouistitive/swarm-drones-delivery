@@ -2,10 +2,6 @@ package core
 
 import "swarm-drones-delivery/internal/world"
 
-type DeliveryMissionsRequest struct {
-	ResponseChannel chan []DeliveryMission
-}
-
 type ChargingMissionRequest struct {
 	Agt             IAgent
 	ResponseChannel chan ChargingMission
@@ -45,7 +41,6 @@ type PerceptionRequest struct {
 }
 
 type ChannelRequests struct {
-	DeliveryMissionsChan chan DeliveryMissionsRequest
 	ChargingMissionChan  chan ChargingMissionRequest
 	ExitChargingChan     chan ExitChargingRequest
 	MoveChan             chan MoveRequest
@@ -56,7 +51,6 @@ type ChannelRequests struct {
 }
 
 func NewChannelRequests(
-	deliveryMissionsChan chan DeliveryMissionsRequest,
 	chargingMissionChan chan ChargingMissionRequest,
 	exitChargingChan chan ExitChargingRequest,
 	moveChan chan MoveRequest,
@@ -66,7 +60,6 @@ func NewChannelRequests(
 	perceptionChan chan PerceptionRequest,
 ) ChannelRequests {
 	return ChannelRequests{
-		DeliveryMissionsChan: deliveryMissionsChan,
 		ChargingMissionChan:  chargingMissionChan,
 		ExitChargingChan:     exitChargingChan,
 		MoveChan:             moveChan,

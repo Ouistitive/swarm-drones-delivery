@@ -15,6 +15,7 @@ func (e *Environment) perceptionRequest() {
 		data := core.PerceptionData{
 			Agents: make([]core.AgentView, 0),
 			Destinations: make([]world.DeliveryDestination, 0),
+			Missions: make([]core.DeliveryMission, len(e.missions)),
 		}
 
 		for _, a := range e.spawnedAgents {
@@ -28,16 +29,8 @@ func (e *Environment) perceptionRequest() {
 				data.Destinations = append(data.Destinations, d)
 			}
 		}
-
+		copy(data.Missions, e.missions)
 		perceptionRequest.ResponseChannel <- data
-	}
-}
-
-func (e *Environment) deliveryMissionsRequest() {
-	for missionRequest := range e.deliveryMissionsChan {
-		cp := make([]core.DeliveryMission, len(e.missions))
-		copy(cp, e.missions)
-		missionRequest.ResponseChannel <- cp
 	}
 }
 

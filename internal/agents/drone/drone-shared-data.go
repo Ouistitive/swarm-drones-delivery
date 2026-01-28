@@ -7,3 +7,4 @@ import (
 type DroneSharedData struct {
 	Addresses []world.DeliveryDestination
 }
+
