@@ -2,38 +2,11 @@ package drone
 
 import (
 	"fmt"
-	"math/rand"
 	"time"
 
 	"swarm-drones-delivery/internal/agents/behaviors"
-	"swarm-drones-delivery/internal/constants"
 	"swarm-drones-delivery/internal/core"
 	"swarm-drones-delivery/internal/world"
-)
-
-//go:generate stringer -type=AgentState
-type AgentState int
-
-const (
-	StateFindingMission AgentState = iota
-	StateWandering
-	StateMovingToDelivery
-	StateMovingToRecharge
-	StateMovingToDestination
-
-	StateGrabbing
-	StateDelivering
-	StateRecharging
-)
-
-//go:generate stringer -type=ActionType
-type ActionType int
-
-const (
-	ActionMove ActionType = iota
-	ActionPick
-	ActionDeliver
-	ActionRecharge
 )
 
 type Drone struct {
@@ -86,27 +59,6 @@ func (d *Drone) TargetPos() world.Position {
 	return d.targetPos
 }
 
-func (d *Drone) GetDisplayData() string {
-	mission := "None"
-	if d.deliveryMission != nil {
-		mission = d.deliveryMission.ToString()
-	} else if d.chargingMission != nil {
-		mission = d.chargingMission.ToString()
-	}
-
-	text := fmt.Sprintf(
-		"AgentID: %s\nState: %s\nAction: %s\nBattery: %d%%\nMemory: %s\nMission: %s",
-		d.id,
-		d.state.String(),
-		d.nextAction.String(),
-		int(d.battery.Ratio()*100),
-		d.memory.ToString(),
-		mission,
-	)
-
-	return text
-}
-
 func (d *Drone) Mission() *core.DeliveryMission {
 	return d.deliveryMission
 }
@@ -127,140 +79,5 @@ func (d *Drone) Start() {
 		d.Deliberate()
 		d.Act()
 		d.syncChan <- step + 1
-	}
-}
-
-func (d *Drone) Percept() {
-	data := d.getPerceptionData()
-	d.allDeliveryMissions = data.Missions
-	d.surroundingAgts = d.surroundingAgts[:0]
-
-	for _, a := range data.Agents {
-		if d.vision.IsAgentDetected(&d.pos, &a.Pos) {
-			d.surroundingAgts = append(d.surroundingAgts, a)
-		}
-	}
-
-	for _, de := range data.Destinations {
-		if d.vision.IsAgentDetected(&d.pos, &de.Pos) {
-			d.memory.AddAddress(&de.Address, &de.Pos)
-		}
-	}
-}
-
-func (d *Drone) ProcessInbox() {
-	for {
-		select {
-		case msg := <- d.inbox:
-			for _, addr := range msg.Addresses {
-				d.memory.AddAddress(&addr.Address, &addr.Pos)
-			}
-		default:
-			return
-		}
-	}
-}
-
-func (d *Drone) Deliberate() {
-	switch d.state {
-	// Generate the next mission to do (recharging or delivering)
-	case StateFindingMission:
-		if time.Since(d.t) >= time.Second || d.deliveryMission == nil {
-			d.orderBestPackages()
-			d.t = time.Now()
-			// Try to find a recharge the drone
-			if d.battery.Ratio() < constants.BATTERY_EMERGENCY_RATIO && d.state != StateRecharging {
-				d.chargingMission = d.getNearestChargingPoint()
-				if d.chargingMission != nil {
-					d.targetPos = d.chargingMission.TargetCharging.Pos
-					d.setDroneStateAndAction(StateMovingToRecharge, ActionMove)
-					return
-				}
-			}
-
-			// If cannot recharge, go deliver a new delivery
-			if len(d.allDeliveryMissions) > 0 {
-				d.deliveryMission = &d.allDeliveryMissions[0]
-			} else {
-				d.deliveryMission = nil
-			}
-			if d.chargingMission == nil && d.deliveryMission != nil && d.deliveryMission.TargetPackage != nil {
-				d.targetPos = d.deliveryMission.TargetPackage.Position()
-				d.setDroneStateAndAction(StateMovingToDelivery, ActionMove)
-			}
-		}
-	// Move to a delivery target and grab it if it can
-	case StateMovingToDelivery:
-		if d.deliveryMission == nil || !d.deliveryMission.TargetPackage.IsGrabbable() {
-			d.setDroneStateAndAction(StateFindingMission, ActionMove)
-		} else if d.deliveryMission.TargetPackage != nil && d.isDroneNearTarget(constants.AGENT_CLOSE_DISTANCE) {
-			d.setDroneStateAndAction(StateGrabbing, ActionPick)
-		}
-	// Recharging
-	case StateMovingToRecharge:
-		if d.isDroneNearTarget(constants.AGENT_CLOSE_DISTANCE) {
-			d.setDroneStateAndAction(StateRecharging, ActionRecharge)
-		}
-	// Grab the delivery and prepare the next delivery destination
-	case StateGrabbing:
-		if d.deliveryMission.TargetPackage.Carrier == d {
-			destPos, exists := d.memory.KnowAddress(&d.deliveryMission.Destination)
-			if exists {
-				d.targetPos = destPos
-				d.setDroneStateAndAction(StateMovingToDestination, ActionMove)
-			} else {
-				d.targetPos = world.NullPosition()
-				d.setDroneStateAndAction(StateWandering, ActionMove)
-			}
-		} else {
-			d.setDroneStateAndAction(StateMovingToDelivery, ActionMove)
-		}
-	// Search random positions based, if the position is found, change the target position
-	case StateWandering:
-		if d.targetPos == world.NullPosition() || d.isDroneNearTarget(constants.AGENT_REGENERATION_RANDOM_POS_DISTANCE) {
-			d.targetPos = world.NewPosition(rand.Float64()*d.vision.WorldBoundaries.X, rand.Float64()*d.vision.WorldBoundaries.Y)
-		}
-
-		p, e := d.memory.KnowAddress(&d.deliveryMission.Destination)
-		if e {
-			d.targetPos = p
-			d.setDroneStateAndAction(StateMovingToDestination, ActionMove)
-		}
-	// Move to delivery position
-	case StateMovingToDestination:
-		if d.isDroneNearTarget(constants.AGENT_CLOSE_DISTANCE) {
-			d.setDroneStateAndAction(StateDelivering, ActionDeliver)
-		}
-	// Deliver the package at the destination and generate a new mission
-	case StateDelivering:
-		if d.deliveryMission == nil {
-			d.setDroneStateAndAction(StateFindingMission, ActionMove)
-		} else if d.isDroneNearTarget(constants.AGENT_CLOSE_DISTANCE) {
-			d.setDroneStateAndAction(StateDelivering, ActionDeliver)
-		}
-	}
-}
-
-func (d *Drone) Act() {
-	switch d.nextAction {
-	case ActionMove:
-		if d.battery.Consume(constants.BATTERY_DISCHARGING_MOVE) {
-			d.move()
-		}
-	case ActionPick:
-		if d.battery.Consume(constants.BATTERY_DISCHARGING_PICK) {
-			d.grab()
-		}
-	case ActionDeliver:
-		if d.battery.Consume(constants.BATTERY_DISCHARGING_DELIVER) {
-			d.deliver()
-		}
-	case ActionRecharge:
-		d.battery.Recharge(constants.BATTERY_CHARGING_RATE)
-		if d.battery.IsFull() {
-			d.deliveryMission = nil
-			d.exitCharging()
-			d.setDroneStateAndAction(StateFindingMission, ActionMove)
-		}
 	}
 }
