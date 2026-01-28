@@ -1,9 +1,9 @@
-package drone
+package core
 
 import (
 	"swarm-drones-delivery/internal/world"
 )
 
-type DroneSharedData struct {
+type AgentMessage struct {
 	Addresses []world.DeliveryDestination
 }

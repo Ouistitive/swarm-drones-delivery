@@ -18,7 +18,7 @@ type Drone struct {
 
 	syncChan chan int
 	requests core.ChannelRequests
-	inbox    chan DroneSharedData
+	inbox    chan core.AgentMessage
 
 	pos        world.Position
 	targetPos  world.Position // What the drone is trying to go in a current state

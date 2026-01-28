@@ -17,7 +17,7 @@ func NewDrone(agtId core.AgentID, worldBoundaries, pos world.Position, syncChan 
 		vision:          behaviors.NewVision(constants.VISION_RANGE, worldBoundaries.X, worldBoundaries.Y),
 		syncChan:        syncChan,
 		requests:        rqs,
-		inbox:           make(chan DroneSharedData, 10),
+		inbox:           make(chan core.AgentMessage, 10),
 		pos:             pos,
 		surroundingAgts: []core.AgentView{},
 		targetDir:       world.NullPosition(),
