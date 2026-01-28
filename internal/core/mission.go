@@ -16,6 +16,11 @@ type DeliveryMission struct {
 	Ok            bool
 }
 
+type ScoredMission struct {
+	Mission DeliveryMission
+	Score   float64
+}
+
 type ChargingMission struct {
 	Id uuid.UUID
 
