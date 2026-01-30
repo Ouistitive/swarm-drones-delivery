@@ -29,6 +29,7 @@ type Drone struct {
 	state      AgentState
 	nextAction ActionType
 
+	lastScorePos 		world.Position
 	scoredMissions 		[]core.ScoredMission
 	allDeliveryMissions	[]core.DeliveryMission
 	deliveryMission 	*core.DeliveryMission

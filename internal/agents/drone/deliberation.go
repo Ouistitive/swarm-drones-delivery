@@ -3,6 +3,7 @@ package drone
 import (
 	"math/rand"
 	"swarm-drones-delivery/internal/constants"
+	"swarm-drones-delivery/internal/utils"
 	"swarm-drones-delivery/internal/world"
 	"time"
 )
@@ -35,7 +36,11 @@ func (d *Drone) Deliberate() {
 
 func (d *Drone) deliberateFindingMission() {
 	if time.Since(d.t) >= time.Second || d.deliveryMission == nil {
-		d.orderBestPackages()
+		if d.lastScorePos == (world.Position{}) || utils.GetDistance(d.pos, d.lastScorePos) > constants.RECALC_DISTANCE {
+			d.orderBestPackages()
+			d.lastScorePos = d.pos
+		}
+
 		d.t = time.Now()
 		// Try to find a recharge the drone
 		if d.battery.Ratio() < constants.BATTERY_EMERGENCY_RATIO && d.state != StateRecharging {
